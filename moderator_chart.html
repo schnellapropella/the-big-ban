@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Social Media &amp; Adolescent Happiness — Moderator Chart</title>
+<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist@2.27.0/plotly.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=DM+Sans:wght@400;500&family=Lora:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#fefdf9;color:#27304a;padding:1.5rem}
+h2{font-family:'Lora',serif;font-size:1.4rem;font-weight:600;color:#2e4b62;margin-bottom:0.4rem}
+.intro{font-size:0.95rem;line-height:1.7;color:#27304a;margin-bottom:1.2rem;max-width:820px}
+
+/* ── Button grid ── */
+.btn-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:1.4rem;max-width:820px}
+.sb-btn{
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Caveat',cursive;font-size:1.05rem;font-weight:700;
+  line-height:1.2;text-align:center;cursor:pointer;
+  border:none;outline:none;min-height:88px;padding:10px 8px;
+  transition:transform 0.15s ease,filter 0.15s ease;
+  word-break:break-word;
+}
+.sb-btn:hover{transform:scale(1.07) rotate(-1.5deg);filter:brightness(1.08)}
+.sb-btn.active{box-shadow:0 0 0 3.5px #000,0 0 0 5.5px #fff}
+
+/* Shapes */
+.heart,.heart2  {border-radius:50% 50% 50% 50% / 55% 55% 45% 45%}
+.cloud          {border-radius:42% 58% 44% 56% / 55% 45% 58% 42%}
+.cloud2         {border-radius:56% 44% 55% 45% / 45% 55% 42% 58%}
+.banner,.banner2{clip-path:polygon(0% 0%,100% 0%,88% 50%,100% 100%,0% 100%,12% 50%);border-radius:0}
+.starburst,.starburst2{
+  clip-path:polygon(50% 0%,55% 18%,68% 5%,63% 23%,80% 18%,68% 33%,88% 35%,72% 46%,85% 57%,67% 55%,72% 73%,55% 63%,50% 82%,45% 63%,28% 73%,33% 55%,15% 57%,28% 46%,12% 35%,32% 33%,20% 18%,37% 23%,32% 5%,45% 18%);
+  border-radius:0;min-height:100px
+}
+
+/* ── Chart ── */
+#chart{width:100%;max-width:900px;height:480px}
+
+/* ── Caption ── */
+.caption{max-width:900px;font-size:0.78rem;line-height:1.6;color:#2e4b62;margin-top:0.8rem;border-top:1px dashed #e69c67;padding-top:0.7rem}
+.caption strong{font-weight:500;color:#27304a}
+.cap-stat{display:inline-block;background:#faf5cc;border:1px solid #e69c67;border-radius:4px;padding:1px 6px;margin:0 2px;font-size:0.76rem}
+</style>
+</head>
+<body>
+
+<h2>Who is most affected?</h2>
+<p class="intro">Select a moderating factor to explore how individual characteristics shape the relationship between social media use and happiness across both panel cohorts. Shaded bands show 95% confidence intervals.</p>
+
+<div class="btn-grid">
+<button class="sb-btn heart active" onclick="selectMod('Sex')" id="btn-Sex" style="background:#e69c67;color:#27304a">Sex</button>
+<button class="sb-btn cloud" onclick="selectMod('Self-esteem')" id="btn-Self-esteem" style="background:#fdf489;color:#27304a">Self-esteem</button>
+<button class="sb-btn banner" onclick="selectMod('SDQ')" id="btn-SDQ" style="background:#2e4b62;color:#fefdf9">SDQ</button>
+<button class="sb-btn starburst" onclick="selectMod('Physical health')" id="btn-Physical-health" style="background:#97c58a;color:#fefdf9">Physical health</button>
+<button class="sb-btn heart2" onclick="selectMod('Parental relationship')" id="btn-Parental-relationship" style="background:#ebc8bb;color:#27304a">Parental relationship</button>
+<button class="sb-btn cloud2" onclick="selectMod('Sibling relationship')" id="btn-Sibling-relationship" style="background:#fdf489;color:#27304a">Sibling relationship</button>
+<button class="sb-btn banner2" onclick="selectMod('Leisure activity')" id="btn-Leisure-activity" style="background:#27304a;color:#fefdf9">Leisure activity</button>
+<button class="sb-btn starburst2" onclick="selectMod('Bullying involvement')" id="btn-Bullying-involvement" style="background:#97c58a;color:#27304a">Bullying involvement</button>
+</div>
+
+<div id="chart"></div>
+<div class="caption" id="caption"></div>
+
+<script>
+const MODS = {"Sex": {"label": "Sex", "groups": [{"name": "Male", "colour": "#e69c67", "p1": [6.002, 5.878, 5.754, 5.63, 5.506], "p1_upper": [6.002, 5.968, 5.934, 5.9, 5.867], "p1_lower": [6.002, 5.788, 5.574, 5.36, 5.145], "p2": [5.895, 5.724, 5.553, 5.382, 5.211], "p2_upper": [5.895, 5.83, 5.765, 5.7, 5.634], "p2_lower": [5.895, 5.618, 5.341, 5.064, 4.788]}, {"name": "Female", "colour": "#2e4b62", "p1": [6.052, 5.833, 5.614, 5.395, 5.176], "p1_upper": [6.052, 5.923, 5.794, 5.665, 5.537], "p1_lower": [6.052, 5.743, 5.434, 5.125, 4.815], "p2": [6.13, 5.838, 5.546, 5.254, 4.962], "p2_upper": [6.13, 5.944, 5.758, 5.572, 5.385], "p2_lower": [6.13, 5.732, 5.334, 4.936, 4.539]}]}, "Self-esteem": {"label": "Self-esteem", "groups": [{"name": "Least positive", "colour": "#e8714c", "p1": [3.865, 3.666, 3.466, 3.267, 3.067], "p1_upper": [3.865, 3.819, 3.772, 3.725, 3.679], "p1_lower": [3.865, 3.513, 3.161, 2.808, 2.456], "p2": [3.889, 3.503, 3.116, 2.729, 2.343], "p2_upper": [3.889, 3.617, 3.345, 3.073, 2.801], "p2_lower": [3.889, 3.388, 2.887, 2.385, 1.884]}, {"name": "Less positive", "colour": "#e8b44c", "p1": [4.845, 4.731, 4.616, 4.501, 4.387], "p1_upper": [4.845, 5.003, 5.161, 5.319, 5.477], "p1_lower": [4.845, 4.458, 4.071, 3.683, 3.296], "p2": [4.864, 4.627, 4.391, 4.154, 3.917], "p2_upper": [4.864, 4.832, 4.8, 4.767, 4.735], "p2_lower": [4.864, 4.423, 3.982, 3.54, 3.099]}, {"name": "More positive", "colour": "#4caf50", "p1": [5.706, 5.666, 5.626, 5.586, 5.546], "p1_upper": [5.706, 6.044, 6.382, 6.72, 7.0], "p1_lower": [5.706, 5.288, 4.87, 4.453, 4.035], "p2": [5.721, 5.616, 5.511, 5.406, 5.301], "p2_upper": [5.721, 5.899, 6.078, 6.256, 6.434], "p2_lower": [5.721, 5.332, 4.944, 4.556, 4.167]}, {"name": "Most positive", "colour": "#4c9be8", "p1": [6.395, 6.415, 6.435, 6.455, 6.475], "p1_upper": [6.395, 6.877, 7.0, 7.0, 7.0], "p1_lower": [6.395, 5.953, 5.511, 5.068, 4.626], "p2": [6.407, 6.407, 6.408, 6.408, 6.409], "p2_upper": [6.407, 6.754, 7.0, 7.0, 7.0], "p2_lower": [6.407, 6.061, 5.714, 5.368, 5.022]}]}, "SDQ": {"label": "SDQ", "groups": [{"name": "Normal (0\u201315)", "colour": "#4c9be8", "p1": [6.088, 5.997, 5.905, 5.813, 5.722], "p1_upper": [6.088, 6.064, 6.039, 6.015, 5.99], "p1_lower": [6.088, 5.93, 5.771, 5.612, 5.453], "p2": [6.135, 6.016, 5.897, 5.778, 5.659], "p2_upper": [6.135, 6.1, 6.065, 6.03, 5.994], "p2_lower": [6.135, 5.932, 5.729, 5.526, 5.323]}, {"name": "Borderline (16\u201319)", "colour": "#e8b44c", "p1": [5.503, 5.331, 5.158, 4.985, 4.812], "p1_upper": [5.503, 5.461, 5.419, 5.377, 5.335], "p1_lower": [5.503, 5.2, 4.896, 4.592, 4.289], "p2": [5.339, 5.22, 5.101, 4.982, 4.863], "p2_upper": [5.339, 5.383, 5.428, 5.472, 5.517], "p2_lower": [5.339, 5.056, 4.773, 4.491, 4.208]}, {"name": "Abnormal (20\u201340)", "colour": "#e8714c", "p1": [5.108, 4.88, 4.652, 4.425, 4.197], "p1_upper": [5.108, 5.054, 5.0, 4.946, 4.892], "p1_lower": [5.108, 4.706, 4.305, 3.903, 3.501], "p2": [4.8, 4.681, 4.562, 4.443, 4.324], "p2_upper": [4.8, 4.899, 4.997, 5.095, 5.194], "p2_lower": [4.8, 4.464, 4.128, 3.791, 3.455]}]}, "Physical health": {"label": "Physical health", "groups": [{"name": "Poor (1)", "colour": "#e8714c", "p1": [5.285, 4.959, 4.633, 4.307, 3.981], "p1_upper": [5.285, 5.032, 4.778, 4.525, 4.271], "p1_lower": [5.285, 4.886, 4.488, 4.089, 3.691], "p2": [5.073, 4.62, 4.167, 3.714, 3.261], "p2_upper": [5.073, 4.685, 4.296, 3.908, 3.52], "p2_lower": [5.073, 4.555, 4.038, 3.52, 3.002]}, {"name": "Fair (2)", "colour": "#e8b44c", "p1": [5.524, 5.275, 5.026, 4.777, 4.528], "p1_upper": [5.524, 5.42, 5.316, 5.212, 5.108], "p1_lower": [5.524, 5.13, 4.736, 4.342, 3.948], "p2": [5.374, 5.018, 4.662, 4.306, 3.95], "p2_upper": [5.374, 5.147, 4.921, 4.694, 4.467], "p2_lower": [5.374, 4.889, 4.403, 3.918, 3.433]}, {"name": "Good (3)", "colour": "#4caf50", "p1": [5.763, 5.591, 5.419, 5.247, 5.075], "p1_upper": [5.763, 5.809, 5.854, 5.9, 5.945], "p1_lower": [5.763, 5.373, 4.984, 4.594, 4.205], "p2": [5.675, 5.416, 5.157, 4.898, 4.639], "p2_upper": [5.675, 5.61, 5.545, 5.48, 5.415], "p2_lower": [5.675, 5.222, 4.769, 4.316, 3.863]}, {"name": "Very good (4)", "colour": "#4c9be8", "p1": [6.002, 5.907, 5.812, 5.717, 5.622], "p1_upper": [6.002, 6.197, 6.392, 6.587, 6.782], "p1_lower": [6.002, 5.617, 5.232, 4.847, 4.462], "p2": [5.976, 5.814, 5.652, 5.49, 5.328], "p2_upper": [5.976, 6.073, 6.169, 6.266, 6.363], "p2_lower": [5.976, 5.555, 5.135, 4.714, 4.293]}, {"name": "Excellent (5)", "colour": "#7b4ce8", "p1": [6.241, 6.223, 6.205, 6.187, 6.169], "p1_upper": [6.241, 6.586, 6.93, 7.0, 7.0], "p1_lower": [6.241, 5.86, 5.48, 5.099, 4.719], "p2": [6.277, 6.212, 6.147, 6.082, 6.017], "p2_upper": [6.277, 6.535, 6.794, 7.0, 7.0], "p2_lower": [6.277, 5.889, 5.5, 5.112, 4.723]}]}, "Parental relationship": {"label": "Parental relationship", "groups": [{"name": "Least positive", "colour": "#e8714c", "p1": [5.786, 5.588, 5.39, 5.192, 4.994], "p1_upper": [5.786, 5.643, 5.501, 5.358, 5.215], "p1_lower": [5.786, 5.533, 5.28, 5.027, 4.774], "p2": [5.865, 5.537, 5.21, 4.882, 4.554], "p2_upper": [5.865, 5.598, 5.331, 5.064, 4.798], "p2_lower": [5.865, 5.476, 5.088, 4.699, 4.31]}, {"name": "Less positive", "colour": "#e8b44c", "p1": [5.929, 5.744, 5.558, 5.373, 5.187], "p1_upper": [5.929, 5.861, 5.792, 5.723, 5.654], "p1_lower": [5.929, 5.627, 5.325, 5.022, 4.72], "p2": [5.926, 5.668, 5.41, 5.152, 4.894], "p2_upper": [5.926, 5.797, 5.669, 5.54, 5.411], "p2_lower": [5.926, 5.539, 5.151, 4.764, 4.377]}, {"name": "More positive", "colour": "#4caf50", "p1": [6.033, 5.856, 5.68, 5.503, 5.327], "p1_upper": [6.033, 6.018, 6.003, 5.988, 5.973], "p1_lower": [6.033, 5.695, 5.357, 5.018, 4.68], "p2": [5.97, 5.763, 5.555, 5.348, 5.141], "p2_upper": [5.97, 5.942, 5.913, 5.885, 5.856], "p2_lower": [5.97, 5.584, 5.197, 4.811, 4.425]}, {"name": "Most positive", "colour": "#4c9be8", "p1": [6.164, 5.999, 5.833, 5.668, 5.503], "p1_upper": [6.164, 6.217, 6.27, 6.322, 6.375], "p1_lower": [6.164, 5.78, 5.397, 5.014, 4.63], "p2": [6.026, 5.882, 5.739, 5.595, 5.451], "p2_upper": [6.026, 6.124, 6.222, 6.32, 6.418], "p2_lower": [6.026, 5.641, 5.256, 4.87, 4.485]}]}, "Sibling relationship": {"label": "Sibling relationship", "groups": [{"name": "Least positive", "colour": "#e8714c", "p1": [5.502, 5.28, 5.059, 4.837, 4.616], "p1_upper": [5.502, 5.37, 5.238, 5.106, 4.974], "p1_lower": [5.502, 5.191, 4.88, 4.569, 4.257], "p2": [4.474, 4.732, 4.99, 5.248, 5.506], "p2_upper": [4.474, 4.858, 5.243, 5.628, 6.013], "p2_lower": [4.474, 4.605, 4.736, 4.867, 4.998]}, {"name": "Less positive", "colour": "#e8b44c", "p1": [5.743, 5.533, 5.324, 5.114, 4.905], "p1_upper": [5.743, 5.697, 5.652, 5.607, 5.561], "p1_lower": [5.743, 5.369, 4.996, 4.622, 4.249], "p2": [5.122, 5.203, 5.284, 5.365, 5.446], "p2_upper": [5.122, 5.435, 5.748, 6.062, 6.375], "p2_lower": [5.122, 4.971, 4.82, 4.669, 4.518]}, {"name": "More positive", "colour": "#4caf50", "p1": [5.992, 5.795, 5.598, 5.401, 5.204], "p1_upper": [5.992, 6.036, 6.08, 6.124, 6.168], "p1_lower": [5.992, 5.554, 5.116, 4.678, 4.24], "p2": [5.792, 5.69, 5.589, 5.487, 5.385], "p2_upper": [5.792, 6.031, 6.27, 6.51, 6.749], "p2_lower": [5.792, 5.349, 4.907, 4.464, 4.021]}, {"name": "Most positive", "colour": "#4c9be8", "p1": [6.196, 6.009, 5.822, 5.636, 5.449], "p1_upper": [6.196, 6.313, 6.431, 6.548, 6.665], "p1_lower": [6.196, 5.705, 5.214, 4.723, 4.232], "p2": [6.342, 6.09, 5.838, 5.587, 5.335], "p2_upper": [6.342, 6.52, 6.699, 6.877, 7.0], "p2_lower": [6.342, 5.66, 4.978, 4.296, 3.614]}]}, "Leisure activity": {"label": "Leisure activity", "groups": [{"name": "Never/almost never", "colour": "#e8714c", "p1": [5.742, 5.672, 5.603, 5.533, 5.463], "p1_upper": [5.742, 5.692, 5.642, 5.592, 5.542], "p1_lower": [5.742, 5.653, 5.563, 5.474, 5.384], "p2": [5.883, 5.524, 5.165, 4.806, 4.448], "p2_upper": [5.883, 5.562, 5.242, 4.922, 4.601], "p2_lower": [5.883, 5.486, 5.088, 4.691, 4.294]}, {"name": "Once a year or less", "colour": "#e8b44c", "p1": [5.875, 5.771, 5.668, 5.564, 5.461], "p1_upper": [5.875, 5.844, 5.812, 5.781, 5.749], "p1_lower": [5.875, 5.699, 5.524, 5.348, 5.172], "p2": [5.98, 5.696, 5.412, 5.128, 4.844], "p2_upper": [5.98, 5.836, 5.692, 5.548, 5.404], "p2_lower": [5.98, 5.556, 5.132, 4.708, 4.283]}, {"name": "Several times per year", "colour": "#4caf50", "p1": [6.006, 5.869, 5.732, 5.595, 5.458], "p1_upper": [6.006, 5.993, 5.98, 5.967, 5.954], "p1_lower": [6.006, 5.745, 5.484, 5.224, 4.963], "p2": [6.077, 5.866, 5.656, 5.446, 5.235], "p2_upper": [6.077, 6.107, 6.137, 6.167, 6.198], "p2_lower": [6.077, 5.626, 5.175, 4.724, 4.273]}, {"name": "At least once per month", "colour": "#4c9be8", "p1": [6.181, 5.999, 5.818, 5.637, 5.455], "p1_upper": [6.181, 6.192, 6.203, 6.215, 6.226], "p1_lower": [6.181, 5.807, 5.433, 5.059, 4.685], "p2": [6.204, 6.092, 5.98, 5.867, 5.755], "p2_upper": [6.204, 6.466, 6.728, 6.989, 7.0], "p2_lower": [6.204, 5.718, 5.232, 4.745, 4.259]}, {"name": "At least once per week", "colour": "#7b4ce8", "p1": [6.367, 6.138, 5.909, 5.681, 5.452], "p1_upper": [6.367, 6.404, 6.442, 6.479, 6.516], "p1_lower": [6.367, 5.872, 5.377, 4.882, 4.388], "p2": [6.341, 6.334, 6.326, 6.318, 6.311], "p2_upper": [6.341, 6.85, 7.0, 7.0, 7.0], "p2_lower": [6.341, 5.817, 5.293, 4.769, 4.244]}, {"name": "Most days", "colour": "#333333", "p1": [6.537, 6.265, 5.993, 5.721, 5.449], "p1_upper": [6.537, 6.598, 6.659, 6.721, 6.782], "p1_lower": [6.537, 5.932, 5.327, 4.721, 4.116], "p2": [6.466, 6.554, 6.642, 6.73, 6.818], "p2_upper": [6.466, 7.0, 7.0, 7.0, 7.0], "p2_lower": [6.466, 5.907, 5.348, 4.79, 4.231]}]}, "Bullying involvement": {"label": "Bullying involvement", "groups": [{"name": "Not involved", "colour": "#4c9be8", "p1": [6.216, 6.027, 5.838, 5.649, 5.46], "p1_upper": [6.216, 6.241, 6.265, 6.29, 6.315], "p1_lower": [6.216, 5.813, 5.411, 5.008, 4.605], "p2": [6.22, 6.023, 5.826, 5.629, 5.432], "p2_upper": [6.22, 6.354, 6.488, 6.623, 6.757], "p2_lower": [6.22, 5.692, 5.164, 4.635, 4.107]}, {"name": "Involved in bullying", "colour": "#e8714c", "p1": [5.352, 5.035, 4.718, 4.401, 4.084], "p1_upper": [5.352, 5.249, 5.145, 5.042, 4.939], "p1_lower": [5.352, 4.821, 4.291, 3.76, 3.229], "p2": [4.583, 4.547, 4.511, 4.475, 4.439], "p2_upper": [4.583, 4.878, 5.173, 5.469, 5.764], "p2_lower": [4.583, 4.216, 3.849, 3.481, 3.114]}]}};
+const CAPTIONS = {"Sex": {"levels": "Binary: 0 = Male, 1 = Female.", "p1": {"b_int": -0.095, "se": 0.046, "p_sig": "p &lt; 0.05 *", "n": 1907, "r2": 0.04, "note": "Each additional bracket of weekday social media use is associated with a 0.095-point steeper decline in happiness for girls than boys."}, "p2": {"b_int": -0.121, "se": 0.054, "p_sig": "p &lt; 0.05 *", "n": 1533, "r2": 0.052, "note": "The gender gap widened in the later panel: girls experienced a 0.121-point greater per-bracket decline than boys."}}, "Self-esteem": {"levels": "Composite index 1\u20134 (1 = least positive, 4 = most positive), 8 Rosenberg-style items. Cronbach &#945; = 0.79.", "p1": {"b_int": 0.089, "se": 0.064, "p_sig": "p = n.s.", "n": 793, "r2": 0.361, "note": "In Panel 1, self-esteem did not significantly moderate the SM\u2013happiness relationship, though higher self-esteem was strongly protective overall."}, "p2": {"b_int": 0.157, "se": 0.048, "p_sig": "p &lt; 0.01 **", "n": 906, "r2": 0.472, "note": "By Panel 2 the interaction was significant: adolescents with higher self-esteem showed less decline per SM bracket (buffering effect)."}}, "SDQ": {"levels": "SDQ Total Difficulties Score: Normal (0\u201315), Borderline (16\u201319), Abnormal (20\u201340). Higher scores = greater difficulties. Small subgroups \u2014 interpret with caution.", "p1": {"b_int": -0.01, "se": 0.004, "p_sig": "p &lt; 0.05 *", "n": 1104, "r2": 0.372, "note": "Greater psychological difficulties amplified the negative effect of SM use on happiness (b = \u22120.010 per SDQ point per SM bracket)."}, "p2": {"b_int": 0.0, "se": 0.005, "p_sig": "p = n.s.", "n": 624, "r2": 0.433, "note": "No significant interaction in Panel 2; the baseline disadvantage of higher SDQ scores remained but did not compound with SM use."}}, "Physical health": {"levels": "Self-rated health: 1 = Poor, 2 = Fair, 3 = Good, 4 = Very good, 5 = Excellent.", "p1": {"b_int": 0.077, "se": 0.037, "p_sig": "p &lt; 0.05 *", "n": 784, "r2": 0.149, "note": "Better physical health buffered the SM\u2013happiness association: each step up reduced the per-bracket decline by 0.077 points."}, "p2": {"b_int": 0.097, "se": 0.033, "p_sig": "p &lt; 0.01 **", "n": 903, "r2": 0.244, "note": "The buffering effect strengthened in Panel 2: adolescents in excellent health were substantially more resilient to heavy SM use."}}, "Parental relationship": {"levels": "Composite index 1\u20134 (1 = least positive, 4 = most positive), 7 items. Cronbach &#945; = 0.55.", "p1": {"b_int": 0.011, "se": 0.028, "p_sig": "p = n.s.", "n": 1902, "r2": 0.05, "note": "No significant moderation in Panel 1, though positive parental relationships predicted higher happiness overall."}, "p2": {"b_int": 0.062, "se": 0.031, "p_sig": "p &lt; 0.05 *", "n": 1532, "r2": 0.07, "note": "A significant buffering effect emerged in Panel 2: most positive parental relationships showed less SM-related happiness decline."}}, "Sibling relationship": {"levels": "Composite index 1\u20134 (1 = least positive, 4 = most positive), 8 items. Cronbach &#945; = 0.88. Participants with siblings only.", "p1": {"b_int": 0.013, "se": 0.041, "p_sig": "p = n.s.", "n": 990, "r2": 0.098, "note": "No significant moderation in Panel 1."}, "p2": {"b_int": -0.191, "se": 0.058, "p_sig": "p &lt; 0.001 ***", "n": 552, "r2": 0.107, "note": "Striking reversal in Panel 2: more positive sibling relationships were associated with stronger negative SM\u2013happiness associations (b = \u22120.191, p &lt; 0.001). Interpret cautiously given small N."}}, "Leisure activity": {"levels": "Composite index 0\u20135 (mean of 16 leisure items). 0 = Never/almost never, 5 = Most days. Cronbach &#945; = 0.66.", "p1": {"b_int": -0.043, "se": 0.034, "p_sig": "p = n.s.", "n": 1000, "r2": 0.044, "note": "No significant moderation in Panel 1."}, "p2": {"b_int": 0.095, "se": 0.066, "p_sig": "p = n.s.", "n": 907, "r2": 0.091, "note": "No significant moderation in Panel 2. Point estimate reversed direction but wide SE (0.066) indicates high uncertainty."}}, "Bullying involvement": {"levels": "Binary: 1 = any involvement in bullying (victim or perpetrator) across four items. Recoded from ordinal due to skewed distributions.", "p1": {"b_int": -0.128, "se": 0.109, "p_sig": "p = n.s.", "n": 1104, "r2": 0.15, "note": "No significant moderation in Panel 1, though involved adolescents reported substantially lower baseline happiness."}, "p2": {"b_int": 0.161, "se": 0.169, "p_sig": "p = n.s.", "n": 626, "r2": 0.151, "note": "No significant interaction in Panel 2. Wide confidence bands reflect limited precision in the bullying subgroup."}}};
+const X = [0,1,2,3,4];
+const X_LABELS = ['None','<1 hr','1–3 hrs','4–6 hrs','7+ hrs'];
+const PALETTE = {
+  porcelain:'#fefdf9', chiffon:'#faf5cc', silk:'#ebc8bb',
+  almond:'#e69c67', indigo:'#27304a', blue:'#2e4b62'
+};
+
+function hexRgba(hex,a){
+  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+function buildTraces(modKey){
+  const mod = MODS[modKey];
+  const traces = [];
+  for(const grp of mod.groups){
+    for(const pk of ['p1','p2']){
+      const col = pk==='p1'?1:2;
+      const upper = grp[pk+'_upper'];
+      const lower = grp[pk+'_lower'];
+      traces.push({
+        x:[...X,...X.slice().reverse()],
+        y:[...upper,...lower.slice().reverse()],
+        fill:'toself',fillcolor:hexRgba(grp.colour,0.15),
+        line:{color:'rgba(0,0,0,0)'},hoverinfo:'skip',
+        showlegend:false,xaxis:`x${col===1?'':'2'}`,yaxis:`y${col===1?'':'2'}`
+      });
+      traces.push({
+        x:X,y:grp[pk],
+        mode:'lines+markers',
+        name:grp.name,
+        line:{color:grp.colour,width:2.5},
+        marker:{size:5,color:grp.colour},
+        showlegend:pk==='p1',
+        legendgroup:grp.name,
+        xaxis:`x${col===1?'':'2'}`,yaxis:`y${col===1?'':'2'}`
+      });
+    }
+  }
+  return traces;
+}
+
+const axisBase = {
+  tickvals:X, ticktext:X_LABELS,
+  range:[0.8,7.2],
+  gridcolor:'#eeeeee', linecolor:'#ebc8bb',
+  tickfont:{family:'DM Sans,sans-serif',size:11,color:'#27304a'},
+  title_font:{family:'DM Sans,sans-serif',size:12,color:'#2e4b62'}
+};
+const yBase = {
+  range:[0.8,7.2],
+  tickvals:[1,2,3,4,5,6,7],
+  ticktext:['1 — Not at all happy','2','3','4','5','6','7 — Completely happy'],
+  gridcolor:'#eeeeee', linecolor:'#ebc8bb',
+  tickfont:{family:'DM Sans,sans-serif',size:10,color:'#27304a'},
+  title_font:{family:'DM Sans,sans-serif',size:12,color:'#2e4b62'}
+};
+
+const layout = {
+  grid:{rows:1,columns:2,pattern:'independent'},
+  annotations:[
+    {text:'Panel 1 (2010–2014)',xref:'x domain',yref:'y domain',x:0.5,y:1.08,showarrow:false,
+      font:{family:'Lora,serif',size:15,color:'#2e4b62'},xanchor:'center'},
+    {text:'Panel 2 (2015–2019)',xref:'x2 domain',yref:'y2 domain',x:0.5,y:1.08,showarrow:false,
+      font:{family:'Lora,serif',size:15,color:'#2e4b62'},xanchor:'center'}
+  ],
+  xaxis:{...axisBase,title:'Social media hours (weekdays)'},
+  xaxis2:{...axisBase,title:'Social media hours (weekdays)'},
+  yaxis:{...yBase,title:'Predicted happiness'},
+  yaxis2:{...yBase,title:''},
+  legend:{orientation:'h',y:-0.22,x:0.5,xanchor:'center',
+    font:{family:'DM Sans,sans-serif',size:12,color:'#27304a'},
+    bgcolor:'rgba(254,253,249,0.9)',bordercolor:'#ebc8bb',borderwidth:1},
+  paper_bgcolor:'#fefdf9',plot_bgcolor:'#ffffff',
+  font:{family:'DM Sans,sans-serif',color:'#27304a'},
+  margin:{t:60,b:90,l:70,r:30},
+  hoverlabel:{bgcolor:'#faf5cc',bordercolor:'#e69c67',
+    font:{family:'DM Sans,sans-serif',size:12,color:'#27304a'}}
+};
+
+const config = {responsive:true,displayModeBar:true,
+  modeBarButtonsToRemove:['select2d','lasso2d'],displaylogo:false};
+
+function updateCaption(key){
+  const cap = CAPTIONS[key];
+  const p1=cap.p1, p2=cap.p2;
+  document.getElementById('caption').innerHTML =
+    `<strong>Moderator:</strong> ${key}. ${cap.levels}<br>`+
+    `<strong>Panel 1 (2010–14):</strong> `+
+    `<span class="cap-stat">b = ${p1.b_int>=0?'+':''}${p1.b_int.toFixed(3)}</span>`+
+    `<span class="cap-stat">SE = ${p1.se.toFixed(3)}</span>`+
+    `<span class="cap-stat">${p1.p_sig}</span>`+
+    `<span class="cap-stat">N = ${p1.n.toLocaleString()}</span>`+
+    `<span class="cap-stat">R² = ${p1.r2.toFixed(3)}</span>`+
+    ` — ${p1.note}<br>`+
+    `<strong>Panel 2 (2015–19):</strong> `+
+    `<span class="cap-stat">b = ${p2.b_int>=0?'+':''}${p2.b_int.toFixed(3)}</span>`+
+    `<span class="cap-stat">SE = ${p2.se.toFixed(3)}</span>`+
+    `<span class="cap-stat">${p2.p_sig}</span>`+
+    `<span class="cap-stat">N = ${p2.n.toLocaleString()}</span>`+
+    `<span class="cap-stat">R² = ${p2.r2.toFixed(3)}</span>`+
+    ` — ${p2.note}<br>`+
+    `<em>Confidence bands: ±1.96 × SE(b&#7522;&#7511;&#7511;) × SM hours × moderator value. Source: Understanding Society (UKHLS), waves 2010–2019.</em>`;
+}
+
+let currentKey = 'Sex';
+
+function selectMod(key){
+  currentKey = key;
+  // Update buttons
+  document.querySelectorAll('.sb-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('btn-'+key.replace(/ /g,'-')).classList.add('active');
+  // Update chart
+  Plotly.react('chart', buildTraces(key), layout, config);
+  // Update caption
+  updateCaption(key);
+}
+
+// Initial render
+Plotly.newPlot('chart', buildTraces('Sex'), layout, config);
+updateCaption('Sex');
+</script>
+</body>
+</html>
