@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>If social media amplifies problems, will banning it solve them?</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400;1,600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── RESET ─────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    img { max-width: 100%; display: block; }
+
+    /* ── PALETTE ────────────────────────────────────────────────── */
+    :root {
+      --black:   #000000;
+      --navy:    #27304a;
+      --blue:    #2e4b62;
+      --green:   #97c58a;
+      --yellow:  #fdf489;
+      --orange:  #e69c67;
+      --rosa:    #ebc8bb;
+      --cream:   #faf5cc;
+      --white:   #fefdf9;
+      --font-hand:  'Caveat', cursive;
+      --font-serif: 'Lora', serif;
+      --font-sans:  'DM Sans', sans-serif;
+    }
+
+    /* ── BASE ───────────────────────────────────────────────────── */
+    body {
+      font-family: var(--font-sans);
+      font-size: 18px;
+      line-height: 1.75;
+      background: var(--white);
+      color: var(--black);
+      overflow-x: hidden;
+    }
+
+    /* ── PROGRESS BAR ───────────────────────────────────────────── */
+    #progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      width: 0%;
+      height: 3px;
+      background: var(--orange);
+      z-index: 9999;
+      transition: width 0.1s linear;
+    }
+
+    /* ── LAYOUT HELPERS ─────────────────────────────────────────── */
+    section { width: 100%; padding: 80px 0; }
+    .inner  { max-width: 760px; margin: 0 auto; padding: 0 32px; }
+    .wide   { max-width: 1100px; margin: 0 auto; padding: 0 32px; }
+
+    /* ── FADE IN ────────────────────────────────────────────────── */
+    .fi {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+    .fi.on { opacity: 1; transform: translateY(0); }
+
+    /* ── DIVIDER ────────────────────────────────────────────────── */
+    .divider { width: 40px; height: 3px; border-radius: 2px; margin-bottom: 32px; }
+
+    /* ═══════════════════════════════════════════════════
+       HERO
+    ═══════════════════════════════════════════════════ */
+    #hero {
+      background: var(--navy);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 80px 32px;
+      position: relative;
+    }
+    #hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse at 15% 60%, rgba(151,197,138,0.12) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 20%, rgba(253,244,137,0.08) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .hero-wrap { position: relative; z-index: 1; max-width: 820px; }
+    .h-kicker {
+      font-family: var(--font-sans);
+      font-size: 0.76rem;
+      font-weight: 500;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 28px;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.2s forwards;
+    }
+    .h-title {
+      font-family: var(--font-serif);
+      font-size: clamp(2.1rem, 5.5vw, 3.9rem);
+      font-weight: 600;
+      color: var(--white);
+      line-height: 1.18;
+      margin-bottom: 26px;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.45s forwards;
+    }
+    .h-title .amp { color: var(--yellow); font-style: italic; }
+    .h-sub {
+      font-family: var(--font-sans);
+      font-size: clamp(0.92rem, 1.8vw, 1.08rem);
+      font-weight: 300;
+      color: rgba(254,253,249,0.68);
+      max-width: 640px;
+      margin: 0 auto 34px;
+      line-height: 1.65;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.7s forwards;
+    }
+    .h-byline {
+      font-family: var(--font-hand);
+      font-size: 1.15rem;
+      color: var(--rosa);
+      margin-bottom: 52px;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.9s forwards;
+    }
+    .scroll-hint {
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      opacity: 0;
+      animation: fadeUp 0.7s 1.15s forwards;
+    }
+    .scroll-hint span {
+      font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase;
+      color: rgba(254,253,249,0.3);
+    }
+    .scroll-line {
+      width: 1px; height: 40px;
+      background: rgba(254,253,249,0.12);
+      position: relative; overflow: hidden;
+    }
+    .scroll-line::after {
+      content: '';
+      position: absolute; top: -100%; width: 100%; height: 100%;
+      background: var(--orange);
+      animation: drop 1.6s 1.4s infinite;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       INFORMAL  bg:#2e4b62  text:#fefdf9
+    ═══════════════════════════════════════════════════ */
+    .s-info { background: var(--blue); color: var(--white); }
+    .s-info .divider { background: var(--green); }
+    .s-info h3 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.45rem, 3vw, 2.05rem);
+      font-weight: 600; color: var(--white);
+      line-height: 1.3; margin-bottom: 26px;
+    }
+    .s-info p {
+      font-family: var(--font-sans);
+      font-size: 1rem; color: var(--white);
+      margin-bottom: 20px; line-height: 1.8;
+    }
+    .s-info .caveat-lead {
+      font-family: var(--font-hand);
+      font-size: 1.35rem; color: var(--white);
+    }
+    /* pull quote */
+    .iq {
+      margin: 36px 0; padding: 26px 30px;
+      background: var(--navy);
+      border-left: 4px solid var(--green);
+      border-radius: 0 8px 8px 0;
+    }
+    .iq p {
+      font-family: var(--font-serif); font-style: italic;
+      font-size: 1.08rem; color: var(--white);
+      margin-bottom: 10px !important; line-height: 1.6;
+    }
+    .iq cite {
+      font-family: var(--font-sans); font-size: 0.82rem;
+      color: var(--green); font-style: normal; letter-spacing: 0.4px;
+    }
+    /* scroll quote */
+    .sq {
+      margin: 44px 0; padding: 36px 28px;
+      text-align: center;
+      border-top: 1px solid rgba(151,197,138,0.28);
+      border-bottom: 1px solid rgba(151,197,138,0.28);
+    }
+    .sq p {
+      font-family: var(--font-serif); font-style: italic;
+      font-size: clamp(1.15rem, 2.4vw, 1.5rem);
+      color: var(--yellow); line-height: 1.5;
+      margin-bottom: 14px !important;
+    }
+    .sq cite {
+      font-family: var(--font-sans); font-size: 0.8rem;
+      color: rgba(254,253,249,0.55); font-style: normal;
+      letter-spacing: 1px; text-transform: uppercase;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       PERSONAL  bg:#faf5cc  text:#000000
+    ═══════════════════════════════════════════════════ */
+    .s-pers { background: var(--cream); color: var(--black); position: relative; }
+    .s-pers::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: radial-gradient(circle, rgba(0,0,0,0.04) 1px, transparent 0);
+      background-size: 24px 24px;
+      pointer-events: none;
+    }
+    .s-pers .inner { position: relative; }
+    .s-pers .divider { background: var(--orange); }
+    .s-pers h3 {
+      font-family: var(--font-hand);
+      font-size: clamp(1.9rem, 4vw, 2.8rem);
+      font-weight: 700; color: var(--black);
+      line-height: 1.25; margin-bottom: 26px;
+    }
+    .s-pers p {
+      font-family: var(--font-sans);
+      font-size: 1rem; color: var(--black);
+      margin-bottom: 20px; line-height: 1.8;
+    }
+    /* personal pull quote */
+    .pq {
+      margin: 36px 0; padding: 26px 30px;
+      background: #fff;
+      border-left: 4px solid var(--orange);
+      border-radius: 0 8px 8px 0;
+      box-shadow: 2px 3px 14px rgba(0,0,0,0.07);
+      transform: rotate(-0.35deg);
+    }
+    .pq p {
+      font-family: var(--font-serif); font-style: italic;
+      font-size: 1.06rem; color: #2a2018;
+      margin-bottom: 10px !important; line-height: 1.6;
+    }
+    .pq cite {
+      font-family: var(--font-sans); font-size: 0.82rem;
+      color: var(--orange); font-style: normal;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       DATA  bg:#fdf489  text:#000000
+    ═══════════════════════════════════════════════════ */
+    .s-data { background: var(--yellow); color: var(--black); }
+    .s-data .divider { background: rgba(0,0,0,0.22); }
+    .s-data h3 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.45rem, 3vw, 2.05rem);
+      font-weight: 600; color: var(--black);
+      line-height: 1.3; margin-bottom: 26px;
+    }
+    .s-data p {
+      font-family: var(--font-sans);
+      font-size: 1rem; color: var(--black);
+      margin-bottom: 20px; line-height: 1.8;
+    }
+    .s-data .italic-note {
+      font-style: italic; font-size: 0.9rem;
+      color: rgba(0,0,0,0.58);
+    }
+
+    /* ═══════════════════════════════════════════════════
+       CLOSING  bg:#27304a  text:#fefdf9
+    ═══════════════════════════════════════════════════ */
+    .s-close { background: var(--navy); color: var(--white); }
+    .s-close .divider { background: var(--yellow); }
+    .s-close h3 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.45rem, 3vw, 2.05rem);
+      font-weight: 600; color: var(--white);
+      line-height: 1.3; margin-bottom: 26px;
+    }
+    .s-close p {
+      font-family: var(--font-sans);
+      font-size: 1rem; color: var(--white);
+      margin-bottom: 20px; line-height: 1.8;
+    }
+    .closing-line {
+      font-family: var(--font-serif); font-style: italic;
+      font-size: clamp(1.15rem, 2.4vw, 1.45rem);
+      color: var(--yellow); margin-top: 40px; line-height: 1.5;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       GRAPH / IMAGE BLOCKS — full width
+    ═══════════════════════════════════════════════════ */
+    .graph-block { width: 100%; margin: 40px 0; }
+    .graph-ph {
+      width: 100%; min-height: 400px;
+      background: rgba(0,0,0,0.05);
+      border: 2px dashed rgba(0,0,0,0.15);
+      border-radius: 6px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 12px; padding: 32px; text-align: center;
+    }
+    .graph-ph .ico { font-size: 2.4rem; }
+    .graph-ph span {
+      font-family: var(--font-hand); font-size: 1.05rem;
+      color: rgba(0,0,0,0.32); line-height: 1.5;
+    }
+    .s-info .graph-ph, .s-close .graph-ph {
+      background: rgba(255,255,255,0.05);
+      border-color: rgba(255,255,255,0.18);
+    }
+    .s-info .graph-ph span, .s-close .graph-ph span {
+      color: rgba(255,255,255,0.35);
+    }
+    .graph-block iframe {
+      width: 100%; min-height: 480px;
+      border: none; border-radius: 6px; display: block;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       FOOTNOTES
+    ═══════════════════════════════════════════════════ */
+    .fn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 17px; height: 17px;
+      background: var(--orange); color: #fff;
+      font-family: var(--font-sans); font-size: 0.62rem; font-weight: 700;
+      border-radius: 50%;
+      cursor: pointer; vertical-align: super; margin-left: 2px;
+      position: relative;
+      transition: background 0.2s, transform 0.15s;
+      user-select: none;
+    }
+    .fn:hover { transform: scale(1.15); }
+    .s-info .fn, .s-close .fn {
+      background: var(--green); color: var(--navy);
+    }
+    .s-data .fn {
+      background: rgba(0,0,0,0.25); color: var(--black);
+    }
+    .fn-box {
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 9px);
+      left: 50%; transform: translateX(-50%);
+      width: 255px;
+      background: var(--navy); color: var(--white);
+      font-family: var(--font-sans); font-size: 0.8rem;
+      line-height: 1.5; padding: 11px 14px;
+      border-radius: 8px;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.28);
+      z-index: 600; pointer-events: none;
+      text-align: left;
+    }
+    .fn-box::after {
+      content: '';
+      position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: var(--navy);
+    }
+    .fn.open .fn-box { display: block; }
+
+    /* ═══════════════════════════════════════════════════
+       LINKS
+    ═══════════════════════════════════════════════════ */
+    a.ref {
+      color: inherit; text-decoration: underline;
+      text-underline-offset: 3px; opacity: 0.72;
+      transition: opacity 0.18s;
+    }
+    a.ref:hover { opacity: 1; }
+
+    /* ═══════════════════════════════════════════════════
+       ANIMATIONS
+    ═══════════════════════════════════════════════════ */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes drop {
+      0%   { top: -100%; }
+      100% { top: 100%; }
+    }
+
+    /* ═══════════════════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════════════════ */
+    @media (max-width: 640px) {
+      section { padding: 56px 0; }
+      .inner, .wide { padding: 0 18px; }
+      .fn-box { width: 200px; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<!-- ═══════════════════════════════════════════════════════
+     HERO
+═══════════════════════════════════════════════════════ -->
+<section id="hero">
+  <div class="hero-wrap">
+    <p class="h-kicker">Data Journalism &nbsp;·&nbsp; Youth Wellbeing &nbsp;·&nbsp; Digital Policy</p>
+    <h1 class="h-title">
+      If social media <span class="amp">amplifies</span> problems,<br>
+      will banning it solve them?
+    </h1>
+    <p class="h-sub">
+      What large-scale data reveals about social media, personal risk factors,
+      and the limits of platform bans for children under 16 in the UK (and beyond).
+    </p>
+    <p class="h-byline">Honor Butler &nbsp;·&nbsp; Jacklyn O'Brien &nbsp;·&nbsp; Gabriele Blaschko</p>
+    <div class="scroll-hint">
+      <span>scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     INFORMAL 1 — A new era of trouble-free childhoods?
+═══════════════════════════════════════════════════════ -->
+<section class="s-info">
+  <div class="inner">
+    <div class="divider fi"></div>
+    <h3 class="fi">A new era of trouble-free childhoods?</h3>
+
+    <p class="fi">
+      Last December, Australia implemented a world's-first law banning social media for
+      under-16s.<span class="fn" tabindex="0">1<span class="fn-box">All major platforms including Instagram, TikTok, Snapchat, X, YouTube, Facebook, Twitch.</span></span>
+      It sparked global debate, and many countries are considering following suit.
+      Laws such as the UK's Online Safety Act have failed to sufficiently protect children
+      in the online realm. Public pressure is mounting, fueling calls for an Australian
+      style ban in the UK.
+    </p>
+
+    <p class="fi">
+      <span class="caveat-lead">As a 21-year-old,</span> I have been an active user of
+      social media for over half my life, and the reality constructed by the ban's supporters
+      is far different from my lived experience. Based on longitudinal childhood data, I
+      question whether children will be better off if social media is banned.
+    </p>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     PERSONAL 1 — I remember setting up my first Instagram
+═══════════════════════════════════════════════════════ -->
+<section class="s-pers">
+  <div class="inner">
+    <div class="divider fi"></div>
+    <h3 class="fi">I remember setting up my first Instagram account with my dad.</h3>
+
+    <p class="fi">
+      I made a secondary account where I posted pictures of nail designs. It was super
+      innocent and friends of mine had similar profiles, with one posting cake designs.
+    </p>
+
+    <div class="pq fi">
+      <p>"I didn't overly worry. I was of the mindset that throughout life I have seen
+      parents who are really strict with their children and don't let them have stuff,
+      those are the children that when they get it seem to gorge on it."</p>
+      <cite>— Fiona, Honor's mum</cite>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     INFORMAL 2 — Academic discourse
+═══════════════════════════════════════════════════════ -->
+<section class="s-info">
+  <div class="inner">
+    <div class="divider fi"></div>
+    <h3 class="fi">Academic discourse</h3>
+
+    <p class="fi">
+      Even among experts, the debate is far from settled. Decades of research show mixed
+      results, varying by what is measured, how, and in whom. The EU's Joint Research Centre
+      warns of "inconsistent findings," unreliable self-reports and a near-total absence of
+      causal evidence.
+    </p>
+
+    <div class="sq fi">
+      <p>"What we currently lack is strong scientific evidence on whether banning social media
+      for certain ages is an effective way [in reducing harm on children]."</p>
+      <cite>— Professor Amy Orben<span class="fn" tabindex="0">2<span class="fn-box">She leads the Digital Mental Health Group at the MRC Cognition and Brain Sciences Unit at the University of Cambridge, which is one of the UK's most influential research teams studying the impact of digital environments on young people.</span></span></cite>
+    </div>
+
+    <p class="fi">
+      Part of the problem lies in the definitions: what constitutes "use" and what constitutes
+      "social media"? Which platforms count, and does scrolling alone equal use, or only
+      active engagement?
+    </p>
+
+    <div class="iq fi">
+      <p>"Are you watching cute cat videos or stalking your ex-boyfriend? These are different
+      experiences but collapse into the same thing, which makes it very hard to research."</p>
+      <cite>— Katrine Tølbøll, Aarhus University<span class="fn" tabindex="0">3<span class="fn-box">At the Department of Political Science, thesis focuses on youth well-being, especially in relation to their digital lives and social media use.</span></span></cite>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     PERSONAL 2 — "A mind-blowing area"
+═══════════════════════════════════════════════════════ -->
+<section class="s-pers">
+  <div class="inner">
+    <div class="divider fi"></div>
+    <h3 class="fi">"A mind-blowing area"</h3>
+
+    <p class="fi">
+      I was a busy child and teen. I did lots of sports and spent six hours at theatre
+      school on Saturdays.
+    </p>
+
+    <div class="pq fi">
+      <p>"We could afford for you to have a lot of extracurricular activities. I totally
+      appreciate that lots of families can't afford that. You feel differently if your
+      child goes on their phone in the afternoon if they have done 3 hours of netball
+      in the morning."</p>
+      <cite>— Fiona, Honor's mum</cite>
+    </div>
+
+    <p class="fi">
+      She noted the importance of balance between real-world activities and screen time.
+      But the digital world is a different place today. "I think it is a mind-blowing area
+      and I'm happy I don't have kids of that age now."
+    </p>
+  </div>
+
+  <!-- PICTURES HONOR — full width -->
+  <div class="wide fi" style="margin-top:36px;">
+    <div class="graph-block">
+      <div class="graph-ph">
+        <span class="ico">📸</span>
+        <span>[ Pictures — Honor ]<br>
+        Replace with: &lt;img src="images/honor.jpg" style="width:100%;" alt="Honor" /&gt;</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="inner">
+    <p class="fi" style="padding-top:8px;">
+      Looking at the panel data in which I fit into, it is clear how different variables
+      cause different outcomes for other teens in years 2015–2019.
+    </p>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     DATA — The factors that change everything
+═══════════════════════════════════════════════════════ -->
+<section class="s-data">
+  <div class="inner">
+    <div class="divider fi"></div>
+    <h3 class="fi">The factors that change everything</h3>
+
+    <p class="fi">
+      The "Understanding Society" longitudinal household survey<span class="fn" tabindex="0">4<span class="fn-box">Panel data means the same children were surveyed every year. Using this data format, we are able to see changes within a person. Panel 1: 2010–2014; Panel 2: 2015–2019.</span></span>
+      asked children aged 10–15 a wide variety of questions about their life, emotional state,
+      behaviour and family every year from 2010–2024. With this data we can get a robust and
+      complete snapshot of what life was like for children in those years.
+    </p>
+
+    <p class="fi">
+      If we compare children who turned 10 in 2010 with children who turned 10 in 2015,
+      those in the later years tend to use more social media as they get older and they
+      see a sharper drop in their self-reported happiness.
+    </p>
+  </div>
+
+  <!-- GRAPH 1 — full width -->
+  <div class="wide fi">
+    <div class="graph-block">
+      <div class="graph-ph">
+        <span class="ico">📈</span>
+        <span>[ Graph 1: Happiness and social media use over time ]<br>
+        Replace with: &lt;iframe src="chart1.html"&gt;&lt;/iframe&gt;</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="inner">
+    <p class="fi italic-note">
+      Note: social media is measured here by time spent. This does not necessarily equate
+      to problematic use — an important distinction we return to below.
+    </p>
+
+    <p class="fi">
+      But what happens to social media usage and happiness among years 2010–2014 and
+      2015–2019 when other factors are added? By examining how different factors combine
+      we get more of an idea of how they impact how social media use influences a
+      child's happiness.
+    </p>
+  </div>
+
+  <!-- GRAPH 2 — full width -->
+  <div class="wide fi">
+    <div class="graph-block">
+      <div class="graph-ph">
+        <span class="ico">📊</span>
+        <span>[ Graph 2: Variable interactions ]<br>
+        Replace with: &lt;iframe src="chart2.html"&gt;&lt;/iframe&gt;</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="inner">
+    <p class="fi">
+      The combination of being a girl and using more social media has more of a negative
+      impact on happiness than it does for boys. This effect is even stronger for the
+      children who were 10 in 2015, which lines up with how the social media sphere
+      became more gendered in later years.
+    </p>
+    <p class="fi">
+      Health remains a clear influence. In an ideal world we would see exactly how different
+      conditions, physical and psychological, play a role. But this is simply not possible
+      with children's data; it is too sensitive to capture with the specificity we need.
+    </p>
+  </div>
+
+  <!-- GRAPH 3 — full width -->
+  <div class="wide fi">
+    <div class="graph-block">
+      <div class="graph-ph">
+        <span class="ico">🔍</span>
+        <span>[ Graph 3: Psychosocial factors ]<br>
+        Replace with: &lt;iframe src="chart3.html"&gt;&lt;/iframe&gt;</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="inner">
+    <p class="fi">
+      Our findings show psychosocial factors changing the relationship between self-reported
+      happiness and social media use. Findings we can draw contextual inference from, while
+      acknowledging the limitations of what observational data can tell us.
+    </p>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     INFORMAL 3 — Same platform, different lives
+═══════════════════════════════════════════════════════ -->
+<section class="s-info">
+  <div class="inner">
+    <div class="divider fi"></div>
+    <h3 class="fi">Same platform, different lives, different outcomes</h3>
+
+    <p class="fi">
+      Personal traits and life circumstances shape how young people experience social media;
+      the platform itself is not decisive. It reflects and amplifies existing vulnerabilities
+      rather than creating them, intensifying what is already there. The same scroll that
+      leaves one teenager feeling connected can leave another feeling isolated.
+    </p>
+    <p class="fi">
+      Not only is not all use equal, but children are also not equally at risk of being
+      heavily affected. Problematic use — compulsive behaviour disrupting sleep, school
+      and relationships — is linked not just to screen time, but to pre-existing factors
+      like poor mental health, neurodivergence and adverse experiences. The child most at
+      risk is not the average user. They are a child already struggling before they open an app.
+    </p>
+
+    <div class="sq fi">
+      <p>"Bans don't really work on problematic social media use. They're so addicted they
+      will find a way around it. It will be the ordinary kid affected, the one who is
+      doing pretty decent."</p>
+      <cite>— Katrine Tølbøll, Researcher</cite>
+    </div>
+
+    <p class="fi">
+      This concern is noted in the scientific community.
+      <a href="https://www.unicef.org" target="_blank" rel="noopener" class="ref">UNICEF</a>
+      warns that age-based restrictions are unlikely on their own to drive the changes the
+      technology industry needs to make, and risk failing to account for the diversity among
+      children and varying circumstances. A ban, as
+      <a href="https://blogs.lse.ac.uk/politicsandpolicy/the-uk-shouldnt-rush-to-a-social-media-ban-for-children-under-16/" target="_blank" rel="noopener" class="ref">Sonia Livingstone argues</a>,
+      leaves the exploitative algorithmic and data practices of big platforms untouched.
+      The responsibility will shift away from the companies that profit from these platforms.
+    </p>
+    <p class="fi">
+      Pushing under-16s off mainstream platforms does not make them safer — it may redirect
+      them toward less regulated spaces with fewer protections. "Others, including children's
+      charities, have warned that a blanket ban could drive children towards less regulated
+      corners of the internet or leave teenagers unprepared when they do come online",
+      education minister Olivia Bailey
+      <a href="https://www.theguardian.com" target="_blank" rel="noopener" class="ref">told the Guardian</a>.
+    </p>
+    <p class="fi">
+      The question is not whether children need better protection online. They do. The
+      question is if an age-based ban is the correct response to a problem the evidence
+      tells us is far more nuanced than that.
+    </p>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     CLOSING — If a ban is not the answer, what is?
+═══════════════════════════════════════════════════════ -->
+<section class="s-close">
+  <div class="inner">
+    <div class="divider fi"></div>
+    <h3 class="fi">If a ban is not the answer, what is?</h3>
+
+    <p class="fi">
+      The evidence points toward a different set of priorities. Algorithms need to be
+      regulated, not just the age children can access them. As Katrine Tølbøll argues:
+      "Some of the algorithms are way too powerful… many of them are created to become
+      addictive and make people engage in problematic use with social media."
+    </p>
+    <p class="fi">
+      The
+      <a href="https://5rightsfoundation.com" target="_blank" rel="noopener" class="ref">5Rights Foundation</a><span class="fn" tabindex="0">5<span class="fn-box">A children's rights organisation that advocates for children's rights in the digital world.</span></span>
+      told the Guardian social media companies must not be "let off the hook" by a ban
+      which many children are likely to dodge. The UK already has good legislation in the
+      Online Safety Act, but it has not been implemented correctly. The
+      <a href="https://www.nspcc.org.uk" target="_blank" rel="noopener" class="ref">NSPCC</a><span class="fn" tabindex="0">6<span class="fn-box">British children's rights organisation "The National Society for the Prevention of Cruelty to Children".</span></span>
+      has warned that a blanket ban risks "driving teenagers into darker, unregulated
+      corners of the internet."
+    </p>
+    <p class="fi">
+      UNICEF calls for a smart mix of measures: platform-level regulation, algorithm
+      transparency, and crucially, children themselves being included in decisions that
+      affect them. Implementing bans without consulting children may itself violate their
+      rights under Article 12 of the UN Convention on the Rights of the Child.
+    </p>
+
+    <p class="closing-line fi">
+      Social media is not the cause. What it reveals, a ban cannot fix.
+    </p>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════════════════════ -->
+<script>
+  // Progress bar
+  const bar = document.getElementById('progress-bar');
+  window.addEventListener('scroll', () => {
+    const pct = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight) * 100;
+    bar.style.width = Math.min(pct, 100) + '%';
+  }, { passive: true });
+
+  // Fade-in on scroll
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('on'); });
+  }, { threshold: 0.1, rootMargin: '0px 0px -28px 0px' });
+
+  document.querySelectorAll('.fi').forEach((el, i) => {
+    el.style.transitionDelay = (i % 6 * 0.08) + 's';
+    obs.observe(el);
+  });
+
+  // Footnote popups
+  document.querySelectorAll('.fn').forEach(fn => {
+    fn.addEventListener('click', e => {
+      e.stopPropagation();
+      const was = fn.classList.contains('open');
+      document.querySelectorAll('.fn.open').forEach(f => f.classList.remove('open'));
+      if (!was) fn.classList.add('open');
+    });
+    fn.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fn.click(); }
+    });
+  });
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.fn.open').forEach(f => f.classList.remove('open'));
+  });
+</script>
+
+</body>
+</html>
