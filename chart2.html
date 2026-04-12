@@ -185,8 +185,8 @@ body{
   <div class="paper">
     <p class="chart-title">Happiness and social media use by age</p>
     <div class="chart-row">
-      <div class="chart-col"><div id="chartHap" style="width:100%;height:420px;"></div></div>
-      <div class="chart-col"><div id="chartSM" style="width:100%;height:420px;"></div></div>
+      <div class="chart-col"><div id="chartHap" style="width:100%;"></div></div>
+      <div class="chart-col"><div id="chartSM" style="width:100%;"></div></div>
     </div>
     <div class="caption" id="caption">
       As children grow older, happiness declines and social media use rises — both trends sharper among those born in 2005.
@@ -304,11 +304,28 @@ const config={responsive:true,displayModeBar:false};
 Plotly.newPlot('chartHap', traces_hap, hapLayout, config);
 Plotly.newPlot('chartSM', traces_sm, smLayout, config);
 
-function reportHeight(){
-  window.parent.postMessage({iframeHeight:document.documentElement.scrollHeight},'*');
+<script>
+function reportHeight() {
+  const height = document.documentElement.scrollHeight;
+  window.parent.postMessage({ iframeHeight: height }, '*');
 }
-new ResizeObserver(reportHeight).observe(document.body);
-reportHeight();
+
+// Watch for layout + chart changes
+const resizeObserver = new ResizeObserver(reportHeight);
+resizeObserver.observe(document.body);
+
+// Trigger at key moments
+window.addEventListener('load', reportHeight);
+window.addEventListener('resize', reportHeight);
+
+// Extra safety for Plotly rendering
+setTimeout(reportHeight, 100);
+setTimeout(reportHeight, 500);
+setTimeout(reportHeight, 1000);
+
+// Trigger after BOTH charts render
+document.getElementById('chartHap')?.on?.('plotly_afterplot', reportHeight);
+document.getElementById('chartSM')?.on?.('plotly_afterplot', reportHeight);
 </script>
 </body>
 </html>
