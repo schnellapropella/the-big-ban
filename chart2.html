@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Happiness and Social Media Use by Age</title>
 <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist@2.27.0/plotly.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Lora:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=DM+Sans:wght@300;400;500&family=Lora:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{
@@ -15,7 +15,25 @@ body{
   padding:1.8rem 0.8rem 1rem;
 }
 
-/* ── Scrapbook paper frame ── */
+/* ── Smiley stickers on left edge ── */
+.stickers{
+  position:absolute;
+  left:-28px;
+  top:0;
+  bottom:0;
+  width:56px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-evenly;
+  align-items:center;
+  z-index:20;
+  pointer-events:none;
+}
+.stickers svg{
+  width:52px;
+  height:52px;
+  filter:drop-shadow(1px 2px 3px rgba(0,0,0,0.18));
+}
 .paper-outer{
   transform: rotate(-0.6deg);
   margin: 28px 8px 32px;
@@ -36,20 +54,43 @@ body{
   mask-repeat: no-repeat;
 }
 .tape-left{
-  position:absolute;top:-14px;left:44px;
-  width:88px;height:27px;
-  background:rgba(214,120,50,0.65);
-  transform:rotate(-2.2deg);border-radius:1px;z-index:10;
-  background-image:repeating-linear-gradient(90deg,rgba(255,255,255,0.1) 0px,rgba(255,255,255,0.1) 1px,transparent 1px,transparent 5px);
-  box-shadow:0 1px 3px rgba(0,0,0,0.12);
-}
-.tape-right{
-  position:absolute;top:-11px;right:80px;
-  width:70px;height:24px;
-  background:rgba(235,185,155,0.65);
-  transform:rotate(1.8deg);border-radius:1px;z-index:10;
+  position:absolute;
+  top:-18px;
+  left:28%;
+  width:96px;height:30px;
+  background:rgba(151,197,138,0.7);
+  transform:rotate(-1.2deg);border-radius:1px;z-index:10;
   background-image:repeating-linear-gradient(90deg,rgba(255,255,255,0.12) 0px,rgba(255,255,255,0.12) 1px,transparent 1px,transparent 5px);
   box-shadow:0 1px 3px rgba(0,0,0,0.1);
+}
+.tape-right{
+  position:absolute;
+  top:-15px;
+  right:22%;
+  width:80px;height:28px;
+  background:rgba(235,200,187,0.75);
+  transform:rotate(2.5deg);border-radius:1px;z-index:10;
+  background-image:repeating-linear-gradient(90deg,rgba(255,255,255,0.15) 0px,rgba(255,255,255,0.15) 1px,transparent 1px,transparent 5px);
+  box-shadow:0 1px 3px rgba(0,0,0,0.08);
+}
+.tape-bottom{
+  position:absolute;
+  bottom:-14px;
+  left:40%;
+  width:88px;height:28px;
+  background:rgba(230,156,103,0.6);
+  transform:rotate(-1.8deg);border-radius:1px;z-index:10;
+  background-image:repeating-linear-gradient(90deg,rgba(255,255,255,0.1) 0px,rgba(255,255,255,0.1) 1px,transparent 1px,transparent 5px);
+  box-shadow:0 1px 3px rgba(0,0,0,0.1);
+}
+.chart-title{
+  font-family:'Caveat',cursive;
+  font-size:1.6rem;
+  font-weight:700;
+  color:#27304a;
+  text-align:center;
+  margin-bottom:0.5rem;
+  padding:0 1rem;
 }
 .chart-row{
   display:grid;
@@ -60,7 +101,6 @@ body{
   transform-origin:center center;
 }
 .chart-col{width:100%;}
-#chartHap,#chartSM{width:100%;height:400px;}
 .caption{
   font-size:0.76rem;line-height:1.7;color:#2e4b62;
   margin-top:0.8rem;
@@ -76,10 +116,77 @@ body{
 <div class="paper-outer">
   <div class="tape-left"></div>
   <div class="tape-right"></div>
+  <div class="tape-bottom"></div>
+  <div class="stickers">
+    <!-- 1: biggest smile -->
+    <svg viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="28" cy="28" r="26" fill="white" stroke="#b0c8e0" stroke-width="1.5"/>
+      <circle cx="19" cy="22" r="2.8" fill="#6a9fc0"/>
+      <circle cx="37" cy="22" r="2.8" fill="#6a9fc0"/>
+      <path d="M 14,30 Q 28,44 42,30" stroke="#6a9fc0" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <path d="M 16,17 Q 19,14 22,16" stroke="#6a9fc0" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <path d="M 34,16 Q 37,14 40,17" stroke="#6a9fc0" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    </svg>
+    <!-- 2: clear smile -->
+    <svg viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="28" cy="28" r="26" fill="white" stroke="#b0c8e0" stroke-width="1.5"/>
+      <circle cx="19" cy="22" r="2.8" fill="#6a9fc0"/>
+      <circle cx="37" cy="22" r="2.8" fill="#6a9fc0"/>
+      <path d="M 16,31 Q 28,41 40,31" stroke="#6a9fc0" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <path d="M 16,18 Q 19,15 22,17" stroke="#6a9fc0" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <path d="M 34,17 Q 37,15 40,18" stroke="#6a9fc0" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    </svg>
+    <!-- 3: small smile -->
+    <svg viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="28" cy="28" r="26" fill="white" stroke="#b0c8e0" stroke-width="1.5"/>
+      <circle cx="19" cy="23" r="2.8" fill="#6a9fc0"/>
+      <circle cx="37" cy="23" r="2.8" fill="#6a9fc0"/>
+      <path d="M 18,33 Q 28,39 38,33" stroke="#6a9fc0" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <path d="M 16,19 Q 19,17 22,18" stroke="#6a9fc0" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <path d="M 34,18 Q 37,17 40,19" stroke="#6a9fc0" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    </svg>
+    <!-- 4: neutral -->
+    <svg viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="28" cy="28" r="26" fill="white" stroke="#b0c8e0" stroke-width="1.5"/>
+      <circle cx="19" cy="23" r="2.8" fill="#6a9fc0"/>
+      <circle cx="37" cy="23" r="2.8" fill="#6a9fc0"/>
+      <path d="M 18,35 Q 28,35 38,35" stroke="#6a9fc0" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <path d="M 16,19 Q 19,19 22,19" stroke="#6a9fc0" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <path d="M 34,19 Q 37,19 40,19" stroke="#6a9fc0" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    </svg>
+    <!-- 5: small frown -->
+    <svg viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="28" cy="28" r="26" fill="white" stroke="#b0c8e0" stroke-width="1.5"/>
+      <circle cx="19" cy="23" r="2.8" fill="#6a9fc0"/>
+      <circle cx="37" cy="23" r="2.8" fill="#6a9fc0"/>
+      <path d="M 18,38 Q 28,32 38,38" stroke="#6a9fc0" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <path d="M 16,20 Q 19,22 22,20" stroke="#6a9fc0" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <path d="M 34,20 Q 37,22 40,20" stroke="#6a9fc0" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    </svg>
+    <!-- 6: clear frown -->
+    <svg viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="28" cy="28" r="26" fill="white" stroke="#b0c8e0" stroke-width="1.5"/>
+      <circle cx="19" cy="22" r="2.8" fill="#6a9fc0"/>
+      <circle cx="37" cy="22" r="2.8" fill="#6a9fc0"/>
+      <path d="M 16,40 Q 28,30 40,40" stroke="#6a9fc0" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <path d="M 16,20 Q 19,23 22,20" stroke="#6a9fc0" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <path d="M 34,20 Q 37,23 40,20" stroke="#6a9fc0" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    </svg>
+    <!-- 7: biggest frown -->
+    <svg viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="28" cy="28" r="26" fill="white" stroke="#b0c8e0" stroke-width="1.5"/>
+      <circle cx="19" cy="21" r="2.8" fill="#6a9fc0"/>
+      <circle cx="37" cy="21" r="2.8" fill="#6a9fc0"/>
+      <path d="M 14,42 Q 28,28 42,42" stroke="#6a9fc0" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <path d="M 15,21 Q 19,25 23,21" stroke="#6a9fc0" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <path d="M 33,21 Q 37,25 41,21" stroke="#6a9fc0" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    </svg>
+  </div>
   <div class="paper">
+    <p class="chart-title">Happiness and social media use by age</p>
     <div class="chart-row">
-      <div class="chart-col"><div id="chartHap"></div></div>
-      <div class="chart-col"><div id="chartSM"></div></div>
+      <div class="chart-col"><div id="chartHap" style="width:100%;height:420px;"></div></div>
+      <div class="chart-col"><div id="chartSM" style="width:100%;height:420px;"></div></div>
     </div>
     <div class="caption" id="caption">
       As children grow older, happiness declines and social media use rises — both trends sharper among those born in 2005.
@@ -91,93 +198,97 @@ body{
 <script>
 const AGES = [10,11,12,13,14,15];
 
-// Mean happiness by age — calculated from raw data
 const HAP_P1 = [5.991,5.998,5.889,5.734,5.555,5.652];
 const HAP_P2 = [5.978,6.011,5.837,5.612,5.482,5.336];
-
-// Mean social media use (0–4 ordinal) by age
-const SM_P1 = [1.206,1.358,1.319,1.494,1.642,1.739];
-const SM_P2 = [1.328,1.310,1.513,1.727,1.913,1.940];
+const SM_P1  = [1.206,1.358,1.319,1.494,1.642,1.739];
+const SM_P2  = [1.328,1.310,1.513,1.727,1.913,1.940];
 
 const COL_P1 = '#2e4b62'; // Charcoal Blue — Born in 2000
 const COL_P2 = '#e69c67'; // Toasted Almond — Born in 2005
 
-const hoverBase = {
+const hoverStyle = {
   bgcolor:'#27304a',bordercolor:'#27304a',
-  font:{family:'DM Sans, sans-serif',size:12,color:'#fefdf9'},
+  font:{family:'DM Sans,sans-serif',size:12,color:'#fefdf9'},
   align:'left'
 };
 
-function makeTrace(x, y, name, colour, showlegend, xaxis, yaxis){
-  return {
-    x, y,
-    mode:'lines+markers',
-    name,
-    line:{color:colour, width:2},
-    marker:{size:7, color:colour, symbol:'circle'},
-    showlegend,
-    xaxis, yaxis,
-    hoverlabel: hoverBase,
-    hovertemplate: `Age %{x}<br>${name}<br>%{customdata}<extra></extra>`,
-  };
-}
+const traces_hap = [
+  {x:AGES, y:HAP_P1, name:'Born in 2000',
+   mode:'lines+markers', line:{color:COL_P1,width:2.5},
+   marker:{size:7,color:COL_P1}, hoverlabel:hoverStyle,
+   hovertemplate:'Age %{x}<br>Born in 2000<br>Happiness: %{y:.2f} / 7<extra></extra>'},
+  {x:AGES, y:HAP_P2, name:'Born in 2005',
+   mode:'lines+markers', line:{color:COL_P2,width:2.5},
+   marker:{size:7,color:COL_P2}, hoverlabel:hoverStyle,
+   hovertemplate:'Age %{x}<br>Born in 2005<br>Happiness: %{y:.2f} / 7<extra></extra>'},
+];
 
-// Happiness chart
-const hapAxisBase = {
+const traces_sm = [
+  {x:AGES, y:SM_P1, name:'Born in 2000',
+   mode:'lines+markers', line:{color:COL_P1,width:2.5},
+   marker:{size:7,color:COL_P1}, hoverlabel:hoverStyle,
+   hovertemplate:'Age %{x}<br>Born in 2000<br>Social media: %{customdata}<extra></extra>',
+   customdata:['None','<1 hr','<1 hr','1–3 hrs','1–3 hrs','1–3 hrs']},
+  {x:AGES, y:SM_P2, name:'Born in 2005',
+   mode:'lines+markers', line:{color:COL_P2,width:2.5},
+   marker:{size:7,color:COL_P2}, hoverlabel:hoverStyle,
+   hovertemplate:'Age %{x}<br>Born in 2005<br>Social media: %{customdata}<extra></extra>',
+   customdata:['None','<1 hr','1–3 hrs','1–3 hrs','1–3 hrs','1–3 hrs']},
+];
+
+const axisBase = {
   tickvals:AGES,
+  title:{text:'Age',font:{family:'DM Sans,sans-serif',size:12,color:'#27304a'},standoff:8},
   tickfont:{family:'DM Sans,sans-serif',size:11,color:'#27304a'},
-  gridcolor:'rgba(0,0,0,0.08)',
+  gridcolor:'rgba(0,0,0,0.07)',
   linecolor:'rgba(0,0,0,0.15)',
   showline:true,
 };
+
 const hapLayout = {
   annotations:[{
     text:'Happiness',
-    xref:'paper',yref:'paper',x:0.5,y:1.05,
-    showarrow:false,
-    font:{family:'DM Sans,sans-serif',size:15,color:'#27304a',weight:600},
-    xanchor:'center'
+    xref:'paper',yref:'paper',x:0.5,y:1.06,
+    showarrow:false,xanchor:'center',
+    font:{family:'DM Sans,sans-serif',size:12,color:'#27304a'}
   }],
-  xaxis:{...hapAxisBase, title:{text:'Age',font:{family:'DM Sans,sans-serif',size:12,color:'#27304a'}}},
+  xaxis:{...axisBase},
   yaxis:{
-    range:[0.5,7.5],
+    range:[1,7],
     tickvals:[1,2,3,4,5,6,7],
-    ticktext:['1 — Not at all happy','2','3','4','5','6','7 — Completely happy'],
-    title:{text:'Self-reported happiness',font:{family:'DM Sans,sans-serif',size:12,color:'#27304a'},standoff:8},
-    gridcolor:'rgba(0,0,0,0.08)',
+    ticktext:['Not at all<br>happy','2','3','4','5','6','Completely<br>happy'],
+    title:{text:'Self-reported happiness',font:{family:'DM Sans,sans-serif',size:11,color:'#27304a'},standoff:10},
+    gridcolor:'rgba(0,0,0,0.07)',
     linecolor:'rgba(0,0,0,0.15)',
     showline:true,
     tickfont:{family:'DM Sans,sans-serif',size:10,color:'#27304a'},
   },
   legend:{
-    orientation:'h',x:0.5,y:-0.22,xanchor:'center',
-    font:{family:'DM Sans,sans-serif',size:12,color:'#27304a'},
+    orientation:'h',x:0.5,y:-0.28,xanchor:'center',
+    font:{family:'DM Sans,sans-serif',size:11,color:'#27304a'},
     bgcolor:'rgba(0,0,0,0)',borderwidth:0,
-    title:{text:'Cohort  ',font:{family:'DM Sans,sans-serif',size:12,color:'#27304a'}}
+    title:{text:'Cohort  ',font:{family:'DM Sans,sans-serif',size:11,color:'#27304a'}}
   },
   paper_bgcolor:'rgba(0,0,0,0)',
   plot_bgcolor:'rgba(247,244,238,0.0)',
-  margin:{t:40,b:70,l:85,r:10},
+  margin:{t:45,b:90,l:100,r:10},
   font:{family:'DM Sans,sans-serif',color:'#27304a'},
 };
 
-// Social media chart
-const smTicktext = ['None','<1 hour','1–3 hours','4–6 hours','7+ hours'];
 const smLayout = {
   annotations:[{
     text:'Social media use',
-    xref:'paper',yref:'paper',x:0.5,y:1.05,
-    showarrow:false,
-    font:{family:'DM Sans,sans-serif',size:15,color:'#27304a',weight:600},
-    xanchor:'center'
+    xref:'paper',yref:'paper',x:0.5,y:1.06,
+    showarrow:false,xanchor:'center',
+    font:{family:'DM Sans,sans-serif',size:12,color:'#27304a'}
   }],
-  xaxis:{...hapAxisBase, title:{text:'Age',font:{family:'DM Sans,sans-serif',size:12,color:'#27304a'}}},
+  xaxis:{...axisBase},
   yaxis:{
-    range:[-0.2,4.2],
+    range:[0,4],
     tickvals:[0,1,2,3,4],
-    ticktext:smTicktext,
-    title:{text:'Weekday social media use',font:{family:'DM Sans,sans-serif',size:12,color:'#27304a'},standoff:8},
-    gridcolor:'rgba(0,0,0,0.08)',
+    ticktext:['None','< 1 hr','1–3 hrs','4–6 hrs','7+ hrs'],
+    title:{text:'Social media use (weekdays)',font:{family:'DM Sans,sans-serif',size:11,color:'#27304a'},standoff:10},
+    gridcolor:'rgba(0,0,0,0.07)',
     linecolor:'rgba(0,0,0,0.15)',
     showline:true,
     tickfont:{family:'DM Sans,sans-serif',size:10,color:'#27304a'},
@@ -185,21 +296,13 @@ const smLayout = {
   showlegend:false,
   paper_bgcolor:'rgba(0,0,0,0)',
   plot_bgcolor:'rgba(247,244,238,0.0)',
-  margin:{t:40,b:70,l:95,r:20},
+  margin:{t:45,b:90,l:75,r:20},
   font:{family:'DM Sans,sans-serif',color:'#27304a'},
 };
 
 const config={responsive:true,displayModeBar:false};
-
-Plotly.newPlot('chartHap',[
-  makeTrace(AGES,HAP_P1,'Born in 2000',COL_P1,true,'x','y'),
-  makeTrace(AGES,HAP_P2,'Born in 2005',COL_P2,true,'x','y'),
-], hapLayout, config);
-
-Plotly.newPlot('chartSM',[
-  makeTrace(AGES,SM_P1,'Born in 2000',COL_P1,false,'x','y'),
-  makeTrace(AGES,SM_P2,'Born in 2005',COL_P2,false,'x','y'),
-], smLayout, config);
+Plotly.newPlot('chartHap', traces_hap, hapLayout, config);
+Plotly.newPlot('chartSM', traces_sm, smLayout, config);
 
 function reportHeight(){
   window.parent.postMessage({iframeHeight:document.documentElement.scrollHeight},'*');
