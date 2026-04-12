@@ -487,11 +487,26 @@ Plotly.newPlot('chart',buildTraces('Sex'),layout,config);
 updateCaption('Sex');
 document.getElementById('chart').on('plotly_hover', roundTooltips);
 
-function reportHeight(){
-  window.parent.postMessage({iframeHeight:document.documentElement.scrollHeight},'*');
+function reportHeight() {
+  const height = document.documentElement.scrollHeight;
+  window.parent.postMessage({ iframeHeight: height }, '*');
 }
-new ResizeObserver(reportHeight).observe(document.body);
-reportHeight();
+
+// Watch for size changes (important for Plotly updates)
+const resizeObserver = new ResizeObserver(reportHeight);
+resizeObserver.observe(document.body);
+
+// Trigger at key moments
+window.addEventListener('load', reportHeight);
+window.addEventListener('resize', reportHeight);
+
+// Ensure correct height after Plotly renders / updates
+setTimeout(reportHeight, 100);
+setTimeout(reportHeight, 500);
+setTimeout(reportHeight, 1000);
+
+// ALSO trigger after Plotly updates (this is the key upgrade)
+document.getElementById('chart').on('plotly_afterplot', reportHeight);
 </script>
   </div>
 </div>
