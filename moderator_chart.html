@@ -159,6 +159,11 @@ h2{
   );
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
+/* ── Rounded hover tooltips ── */
+.hovertext rect {
+  rx: 8 !important;
+  ry: 8 !important;
+}
 .chart-area{
   display:flex;
   flex-direction:column;
@@ -368,16 +373,13 @@ const COHORT_LABEL = { p1:'born around 2000', p2:'born around 2005' };
 
 function makeHoverText(modKey, grp, pk){
   const prose = GROUP_PROSE[modKey][grp.name];
-  const baseline = grp[pk][0]; // happiness at 0 hrs
+  const baseline = grp[pk][0];
   return grp[pk].map((val, i) => {
-    if(i === 0){
-      return `<b>${prose.subj}</b><br>who uses <b>no</b> social media<br>(${COHORT_LABEL[pk]})<br>has a predicted happiness of <b>${val.toFixed(2)}</b> out of 7`;
-    }
     const diff = val - baseline;
     const pct  = Math.abs((diff / baseline) * 100).toFixed(1);
-    const dir  = diff < 0 ? 'lower' : 'higher';
-    const sign = diff < 0 ? '↓' : '↑';
-    return `<b>${prose.subj}</b><br>using <b>${X_LABELS_HOVER[i]}</b> social media<br>(${COHORT_LABEL[pk]})<br>has a predicted happiness of <b>${val.toFixed(2)}</b> out of 7<br>${sign} <b>${pct}%</b> ${dir} than with no use`;
+    const dir  = diff < 0 ? `↓ ${pct}% lower than no use` : i === 0 ? 'baseline' : `↑ ${pct}% higher than no use`;
+    const usageLine = i === 0 ? 'None' : X_LABELS_HOVER[i].replace(' of','');
+    return `${prose.subj}<br>Cohort: ${COHORT_LABEL[pk]}<br>SM use: ${usageLine}<br>Happiness: ${val.toFixed(2)} / 7<br>Change: ${dir}`;
   });
 }
 
@@ -401,7 +403,11 @@ function buildTraces(modKey){
         hoverlabel:{
           bgcolor:'#27304a',
           bordercolor:'#27304a',
-          font:{family:'DM Sans, sans-serif',size:12,color:'#fefdf9'}
+          font:{family:'DM Sans, sans-serif',size:12,color:'#fefdf9'},
+          padding:{t:10,b:10,l:14,r:14},
+          borderwidth:0,
+          borderpad:12,
+          align:'left'
         }
       });
     }
@@ -462,15 +468,24 @@ function updateCaption(key){
     '<em>Source: Understanding Society (UKHLS), waves 2010–2019.</em>';
 }
 
+function roundTooltips(){
+  document.querySelectorAll('.hovertext rect').forEach(r=>{
+    r.setAttribute('rx','8');
+    r.setAttribute('ry','8');
+  });
+}
+
 function selectMod(key){
   document.querySelectorAll('.sb-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('btn-'+key).classList.add('active');
   Plotly.react('chart',buildTraces(key),layout,config);
   updateCaption(key);
+  document.getElementById('chart').on('plotly_hover', roundTooltips);
 }
 
 Plotly.newPlot('chart',buildTraces('Sex'),layout,config);
 updateCaption('Sex');
+document.getElementById('chart').on('plotly_hover', roundTooltips);
 
 function reportHeight(){
   window.parent.postMessage({iframeHeight:document.documentElement.scrollHeight},'*');
