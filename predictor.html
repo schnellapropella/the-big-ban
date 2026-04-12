@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What would the data predict for you?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=Lora:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy:   #27304a;
+  --blue:   #2e4b62;
+  --green:  #97c58a;
+  --yellow: #fdf489;
+  --orange: #e69c67;
+  --rosa:   #ebc8bb;
+  --cream:  #faf5cc;
+  --white:  #fefdf9;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: transparent;
+  color: var(--navy);
+  padding: 1.4rem 0.8rem 1rem;
+}
+
+/* ── Paper card ── */
+.paper-outer {
+  transform: rotate(-0.5deg);
+  margin: 26px 8px 30px;
+  position: relative;
+  filter: drop-shadow(4px 6px 14px rgba(0,0,0,0.22));
+}
+
+.paper {
+  background: #f7f5f0;
+  position: relative;
+  padding: 2rem 3rem 2.5rem 2.2rem;
+  min-height: 480px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA0JCgsKCA0LCgsODg0PEyAVExISEyccHhcgLikxMC4pLSwzOko+MzZGNywtQFdBRkxOUlNSMj5aYVpQYEpRUk//2wBDAQ4ODhMREyYVFSZPNS01T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0//wAARCASwBLADASIAAhEBAxEB/8QAGgABAQEBAQEBAAAAAAAAAAAAAAEEAwUCBv/EADMQAQABAgMFBgYCAwEBAQAAAAABAhEDITEEBRQzchJBUVNxwSIyUmGRoROBI0KSsTRD/8QAGAEBAQEBAQAAAAAAAAAAAAAAAAIDBAH/xAAeEQEAAgIDAQEBAAAAAAAAAAAAAQIRMQMSMlEhQf/aAAwDAQACEQMRAD8A/RgOV1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADRsmFRi1VRXfKO6Wdr3f8APX6Qqu0207cHg+FX5ODwfCr8tA26x8Y9pZ+DwfCr8nB4PhV+WgOsfDtLPweD4Vfk4PB8Kvy0B1j4dpZ+DwfCr8nB4PhV+WgOsfDtLPweD4Vfk4PB8Kvy0B1j4dpZ+DwfCr8nB4PhV+WgOsfDtLPweD4Vfk4PB8Kvy0B1j4dpZ+DwfCr8nB4PhV+WgOsfDtLPweD4Vfk4PB8Kvy0B1j4dpZ+DwfCr/peDwfCr/p3DrHw7S4cHgeFX5ODwfCr/AKdw6x8O0uHB4P0z/wBHB4P0z+XcsdY+HaXDg8H6Z/JweD9M/l3HvWPh2lw4TB+mfycHg/TP/TQjzrHw7S48HgfTP/RweB9M/l3HvWPh2lw4PA+mfycHgfTP5dw6x8O0uHB4H0z+ThMD6J/Mu4dY+HaXDg8D6Z/JwmB9M/l3DrHwzLhweB9M/k4PA+mfy7qdY+GZZ+DwPo/bQHWPhmXDhMD6J/JwmB9E/l3DrHwzLhweB9H7OEwPo/buHWDtLhwmB9H7OEwPo/buHWPh2lw4PA+j9nCYH0ft3DrBmXDg8D6P2cJgfR+5dw6x8O0uHCYH0fuThMD6P27h1j4Zlw4PA+j9ycJgfR+5d1OsfDMs/B4H0fs4PA+j9tAdY+GZZ+DwPo/ZwmB5f7aA6wZln4TA+j9pwuDFVux3eLQTT2vGJOsfDMuEbJgfR+ydkwI/0/brTOVp1fX2OsfDMs/C4PdR+31wmB9H7dZib5LSdY+GZeVtWFTh4kdnSe7wcXTHrnExq6p8cnNzzv8AG8aAHj0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa93/PX6QyNe7/nr9IVT0m+m4B0MAAAAAAAAAAAAAAAAACwBYAAUELCwAigIoAAAAAAoIKgKAAAAAAAAAAAAAAAAACgAAALTqh2opzkHxOeJVP3s+ofFOmaxPgD7SZiIvOURnJE+Lz9r2r+SZw8Ofg758U2tiHta5ZapvVMx3ygOd0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADXu/56/SGRr3f89fpCqek303AOhgAAAAAAAAGgagamhoAZGgAoAIKAgqAoAAAAAAoCCgAAAAAAAAAAAAAAKBYEUQFQUEU7wAAFiLzZyxJvV2dY73aiM7s9M3qkH1EZWIuTNiZyy1Bj27Fq7X8UTaLXn7sb7xpmrGrmfF8Oa05lvWMQAPFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADXu/56/SGRr3f89fpCqek303AOhgAAAAAAAAAAAAQAAKAkKAAAAAAAAAAACooIoAAAiiAKAAAAAAAAALKKAAAAAAAAAAoHbiimbuFOWfe+8a9U9mO58RFtQUHPHq7ODXP2J/B5s/NPqgOV0gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADXu/56/SGRr3f89fpCqek303AOhgAAAAAAAAAAAACoBCgAACCgAEAAAAAAAKgCooAAAAAIoALcEDUAAAVIUAAAC4AAAAAqALGWaFeWHM+IPiZ+ae+6W+6xnGcE20BJizjtNE4mDMU6xn6u1WqPJjP4ROHkDpj0xTjV0xpEubml0QAD0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa93/PX6QyNe7/AJ6/SFU9JvpuAdDAAAAAAAAAAAAAVJAFRQAAAAAAAIAAAVAFAAAAAAAAAAAmAIJgUEFQFEAFAAACFRQAkkALqCRnNnzXecPJ9xrD4qqth130B8ROX3JmyRCagoRlq5V7ThUTMTVeY8IeTMRsiMsOPMVY1c06TLmtc9scarWvN0c07dEaAB6AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANe7/nr9IZGvd/z1+kKp6TbTcA6GAAAAAAAAAFgAAC4FwLgAoAAAAAAAAAAKCKgCgAAACKAAAXCwLYMzUEsQqSBoqaKBYAAF9QRUsApoigBoAsTndzxItFUTGVTo+MaZmeyDlETYyjVYi2rjjYn8WHNURne0Ezgj9Ta8WaMO0TnVo899V11V1dqqby+XPa3aW9a4gASoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa93/Az1+kMjXu/56/SFU9JvpuAdDAAAAAAAAAFQAFBAAAUBLgCiWUAAAAAAAAAFAAAAAIAFyQNAMhdU0BdSxqmkgqWUBIzWwARIWMwFQBQAQUABQI1ca5/zzH2do1cK/hx6r94LfOzjtluGqvHg7Wzu47RHbwq6ZynWHltPY280BzOgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa938yv0ZGvd/Mr9FU9JtpvAdDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+  -webkit-mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-image: url("data:image/jpeg;base64,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");
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+}
+
+/* ── Tape decorations ── */
+.tape {
+  position: absolute; z-index: 10; border-radius: 1px;
+  background-image: repeating-linear-gradient(90deg, rgba(255,255,255,0.12) 0px, rgba(255,255,255,0.12) 1px, transparent 1px, transparent 5px);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+.tape-tl { top:-14px; left:48px; width:82px; height:26px; background:rgba(230,156,103,0.65); transform:rotate(-2deg); }
+.tape-tr { top:-10px; right:72px; width:68px; height:24px; background:rgba(151,197,138,0.68); transform:rotate(2deg); }
+.tape-br { bottom:-12px; right:110px; width:96px; height:25px; background:rgba(235,200,187,0.72); transform:rotate(-1.5deg); }
+
+/* ── Quiz header ── */
+.quiz-header { margin-bottom: 1.2rem; }
+.quiz-kicker {
+  font-family: 'DM Sans', sans-serif; font-size: 0.72rem; font-weight: 500;
+  letter-spacing: 2.5px; text-transform: uppercase; color: var(--blue);
+  margin-bottom: 0.45rem; opacity: 0.7;
+}
+.quiz-title {
+  font-family: 'Caveat', cursive; font-size: clamp(1.5rem, 3.5vw, 2rem);
+  font-weight: 700; color: var(--navy); line-height: 1.2; margin-bottom: 0.35rem;
+}
+.quiz-sub { font-size: 0.88rem; color: rgba(39,48,74,0.62); line-height: 1.6; }
+
+/* ── Progress ── */
+.progress-row { display: flex; align-items: center; gap: 12px; margin-bottom: 1.6rem; }
+.step-label { font-family: 'Caveat', cursive; font-size: 1rem; font-weight: 600; color: var(--blue); white-space: nowrap; min-width: 38px; }
+.progress-track { flex:1; height:4px; background:rgba(46,75,98,0.15); border-radius:2px; overflow:hidden; }
+.progress-fill { height:100%; background:var(--orange); border-radius:2px; transition:width 0.45s ease; width:0%; }
+
+/* ── Steps ── */
+.step { display: none; }
+.step.active { display: block; animation: stepIn 0.35s ease; }
+@keyframes stepIn { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+
+.q-title { font-family:'Lora',serif; font-size:clamp(1.1rem,2.5vw,1.4rem); font-weight:600; color:var(--navy); line-height:1.35; margin-bottom:0.45rem; }
+.q-sub { font-size:0.84rem; color:rgba(39,48,74,0.58); margin-bottom:1.3rem; line-height:1.6; }
+
+/* ── Scrapbook blob buttons ── */
+.choice-row { display:flex; gap:16px; flex-wrap:wrap; margin-top:0.3rem; }
+.choice-btn {
+  font-family:'Caveat',cursive; font-size:1.08rem; font-weight:700;
+  cursor:pointer; border:none; outline:none; padding:0;
+  width:108px; height:86px; display:flex; align-items:center; justify-content:center;
+  position:relative; background:none; transition:transform 0.14s ease, filter 0.14s ease;
+  text-align:center; line-height:1.25;
+}
+.choice-btn:hover { transform:scale(1.07) rotate(-1.5deg); filter:brightness(1.07); }
+.choice-btn.selected { transform:scale(1.05); }
+.choice-btn.selected .shape { filter:brightness(0.9); }
+.choice-btn.selected::after {
+  content:''; position:absolute; inset:-4px; border:2.5px dashed var(--navy); pointer-events:none;
+}
+.shape { position:absolute; inset:0; }
+.s-orange { background:var(--orange); border-radius:62% 38% 55% 45% / 52% 48% 60% 40%; }
+.s-green  { background:var(--green);  border-radius:50% 50% 40% 60% / 60% 40% 60% 40%; }
+.s-rosa   { background:var(--rosa);   border-radius:40% 60% 60% 40% / 40% 40% 60% 60%; }
+.s-yellow { background:var(--yellow); border-radius:55% 45% 48% 52% / 44% 56% 44% 56%; }
+.s-blue   { background:var(--blue);   border-radius:45% 55% 52% 48% / 56% 44% 56% 44%; }
+.s-navy   { background:var(--navy);   border-radius:52% 48% 45% 55% / 48% 52% 48% 52%; }
+.choice-btn.selected.s-orange-btn::after { border-radius:62% 38% 55% 45% / 52% 48% 60% 40%; }
+.choice-btn.selected.s-green-btn::after  { border-radius:50% 50% 40% 60% / 60% 40% 60% 40%; }
+.choice-btn.selected.s-rosa-btn::after   { border-radius:40% 60% 60% 40% / 40% 40% 60% 60%; }
+.choice-btn.selected.s-blue-btn::after   { border-radius:45% 55% 52% 48% / 56% 44% 56% 44%; }
+.choice-btn.selected.s-navy-btn::after   { border-radius:52% 48% 45% 55% / 48% 52% 48% 52%; }
+.clabel { position:relative; z-index:1; color:var(--navy); padding:4px 7px; }
+.clabel.light { color:var(--white); }
+
+/* ── Health buttons ── */
+.health-row { display:flex; gap:8px; flex-wrap:wrap; align-items:flex-end; margin-top:0.4rem; }
+.health-btn {
+  font-family:'Caveat',cursive; font-size:0.88rem; font-weight:700;
+  cursor:pointer; border:none; outline:none; padding:0;
+  display:flex; align-items:center; justify-content:center;
+  position:relative; background:none; transition:transform 0.14s ease;
+  text-align:center; border-radius:50%;
+}
+.health-btn:hover { transform:scale(1.09); }
+.health-btn.selected::after { content:''; position:absolute; inset:-5px; border:2.5px dashed var(--navy); border-radius:50%; pointer-events:none; }
+.health-btn .hshape { position:absolute; inset:0; border-radius:50%; }
+.health-btn .hlabel { position:relative; z-index:1; padding:4px 3px; line-height:1.15; }
+
+/* ── SM buttons ── */
+.sm-col { display:flex; flex-direction:column; gap:7px; margin-top:0.4rem; }
+.sm-btn {
+  font-family:'DM Sans',sans-serif; font-size:0.9rem; cursor:pointer;
+  border:2px solid rgba(46,75,98,0.22); outline:none; padding:9px 16px;
+  display:flex; align-items:center; gap:10px; background:rgba(255,255,255,0.5);
+  border-radius:8px; transition:all 0.14s ease; color:var(--navy); text-align:left;
+}
+.sm-btn:hover { border-color:var(--orange); background:rgba(230,156,103,0.08); }
+.sm-btn.selected { border-color:var(--orange); background:rgba(230,156,103,0.18); font-weight:500; }
+.sm-dot { width:10px; height:10px; border-radius:50%; background:rgba(46,75,98,0.22); flex-shrink:0; transition:background 0.14s; }
+.sm-btn.selected .sm-dot { background:var(--orange); }
+.sm-desc { color:rgba(39,48,74,0.52); margin-left:4px; font-size:0.82rem; }
+
+/* ── Self-esteem grid ── */
+.se-head {
+  display:grid; grid-template-columns:1fr repeat(4,40px);
+  gap:3px; margin-bottom:4px; padding-bottom:7px;
+  border-bottom:1.5px solid rgba(46,75,98,0.15);
+}
+.se-col-head { font-size:0.68rem; color:rgba(39,48,74,0.52); text-align:center; font-weight:500; line-height:1.25; }
+.se-item {
+  display:grid; grid-template-columns:1fr repeat(4,40px);
+  gap:3px; align-items:center; padding:5px 0;
+  border-bottom:1px solid rgba(46,75,98,0.07);
+}
+.se-item:last-child { border-bottom:none; }
+.se-stmt { font-size:0.87rem; color:var(--navy); line-height:1.4; padding-right:8px; }
+.se-opt {
+  width:34px; height:34px; border-radius:50%;
+  border:2px solid rgba(46,75,98,0.22); background:rgba(255,255,255,0.6);
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:all 0.12s ease; margin:0 auto; font-size:0; outline:none;
+}
+.se-opt:hover { border-color:var(--orange); background:rgba(230,156,103,0.12); }
+.se-opt.selected { background:var(--orange); border-color:var(--orange); }
+.se-opt.selected::after { content:'✓'; font-size:0.85rem; color:white; }
+
+/* ── Next button ── */
+.next-wrap { display:flex; justify-content:flex-end; margin-top:1.4rem; }
+.next-btn {
+  font-family:'Caveat',cursive; font-size:1.1rem; font-weight:700;
+  color:var(--white); background:var(--navy); border:none; padding:10px 26px;
+  border-radius:6px; cursor:pointer; transition:background 0.15s, transform 0.12s;
+  display:flex; align-items:center; gap:7px;
+}
+.next-btn:hover:not(:disabled) { background:var(--blue); transform:translateY(-1px); }
+.next-btn:disabled { opacity:0.38; cursor:default; }
+
+/* ── Result panel ── */
+#result-panel { display:none; animation:stepIn 0.5s ease; }
+.result-title {
+  font-family:'Caveat',cursive; font-size:clamp(1.45rem,3.5vw,2rem);
+  font-weight:700; color:var(--navy); margin-bottom:0.25rem;
+}
+.result-sub { font-size:0.86rem; color:rgba(39,48,74,0.6); margin-bottom:1.4rem; line-height:1.55; }
+
+/* Score display */
+.score-row { display:flex; align-items:baseline; gap:6px; margin:0.6rem 0 0.4rem; }
+.score-num {
+  font-family:'Caveat',cursive; font-size:clamp(3rem,6vw,4.2rem);
+  font-weight:700; color:var(--navy); line-height:1;
+}
+.score-denom { font-family:'Caveat',cursive; font-size:1.5rem; color:rgba(39,48,74,0.38); }
+.score-level {
+  display:inline-block; font-family:'DM Sans',sans-serif; font-size:0.76rem;
+  font-weight:500; letter-spacing:1.5px; text-transform:uppercase;
+  padding:3px 11px; border-radius:4px; margin-bottom:1rem;
+}
+
+/* Gauge */
+.gauge-wrap { margin:0.6rem 0 1.3rem; }
+.gauge-bg { height:28px; background:rgba(46,75,98,0.1); border-radius:14px; overflow:hidden; }
+.gauge-fill {
+  height:100%; border-radius:14px; width:0%;
+  background:linear-gradient(90deg, var(--rosa) 0%, var(--orange) 42%, var(--green) 80%, #2e4b62 100%);
+  transition:width 1.3s cubic-bezier(0.22,0.61,0.36,1);
+}
+.gauge-marks {
+  display:flex; justify-content:space-between;
+  margin-top:4px; font-size:0.7rem; color:rgba(39,48,74,0.45);
+}
+.gauge-avg-line {
+  position:relative; height:10px; margin-top:3px;
+}
+.gauge-avg-tick {
+  position:absolute; width:2px; height:10px;
+  background:rgba(46,75,98,0.35); border-radius:1px;
+  transform:translateX(-50%);
+}
+.gauge-avg-label {
+  position:absolute; font-size:0.68rem; color:rgba(39,48,74,0.5);
+  transform:translateX(-50%); top:11px; white-space:nowrap;
+}
+
+/* Result message */
+.result-msg { font-size:0.92rem; line-height:1.75; color:var(--navy); margin-bottom:1rem; }
+.result-context {
+  font-size:0.82rem; line-height:1.65; color:rgba(39,48,74,0.68);
+  padding:11px 16px; background:rgba(255,255,255,0.55);
+  border-left:3px solid var(--orange); border-radius:0 6px 6px 0; margin-bottom:1.1rem;
+}
+.retry-btn {
+  font-family:'Caveat',cursive; font-size:1rem; font-weight:600;
+  color:var(--blue); background:transparent; border:2px solid var(--blue);
+  padding:8px 20px; border-radius:6px; cursor:pointer; transition:all 0.14s;
+}
+.retry-btn:hover { background:var(--blue); color:var(--white); }
+
+/* Caption */
+.quiz-caption {
+  font-size:0.73rem; color:rgba(39,48,74,0.48); line-height:1.65;
+  margin-top:1.4rem; padding-top:0.75rem;
+  border-top:1px solid rgba(230,156,103,0.3);
+}
+
+/* Inner rotate compensation */
+.inner-rotate { transform:rotate(0.5deg); transform-origin:center center; }
+</style>
+</head>
+<body>
+
+<div class="paper-outer">
+  <div class="tape tape-tl"></div>
+  <div class="tape tape-tr"></div>
+  <div class="tape tape-br"></div>
+  <div class="paper">
+  <div class="inner-rotate">
+
+    <!-- Quiz header -->
+    <div id="quiz-header" class="quiz-header">
+      <div class="quiz-kicker">Interactive · Try it yourself</div>
+      <h2 class="quiz-title">What would the data predict for you?</h2>
+      <p class="quiz-sub">Answer five short questions to see where your profile maps onto the happiness patterns in the research. Your score is estimated from the same interaction effects shown in the chart above.</p>
+    </div>
+
+    <!-- Progress -->
+    <div id="progress-wrap" class="progress-row">
+      <span class="step-label" id="stepLabel">1 / 5</span>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+
+    <!-- ══ STEP 1: Cohort ══ -->
+    <div class="step active" id="step-1">
+      <p class="q-title">Were you born closer to 2000 or 2005?</p>
+      <p class="q-sub">The research tracked two cohorts of young people. Pick the one you're closest to — or most curious about.</p>
+      <div class="choice-row">
+        <button class="choice-btn s-orange-btn" onclick="setChoice('cohort',2000,this)">
+          <span class="shape s-orange"></span>
+          <span class="clabel">Born around<br>2000</span>
+        </button>
+        <button class="choice-btn s-green-btn" onclick="setChoice('cohort',2005,this)">
+          <span class="shape s-green"></span>
+          <span class="clabel">Born around<br>2005</span>
+        </button>
+      </div>
+      <div class="next-wrap">
+        <button class="next-btn" id="next-1" onclick="goNext(1)" disabled>Next <span>→</span></button>
+      </div>
+    </div>
+
+    <!-- ══ STEP 2: Sex ══ -->
+    <div class="step" id="step-2">
+      <p class="q-title">How do you identify?</p>
+      <p class="q-sub">The original study used binary sex categories. Select whichever best applies to you.</p>
+      <div class="choice-row">
+        <button class="choice-btn s-blue-btn" onclick="setChoice('sex',0,this)">
+          <span class="shape s-blue"></span>
+          <span class="clabel light">Male</span>
+        </button>
+        <button class="choice-btn s-rosa-btn" onclick="setChoice('sex',1,this)">
+          <span class="shape s-rosa"></span>
+          <span class="clabel">Female</span>
+        </button>
+      </div>
+      <div class="next-wrap">
+        <button class="next-btn" id="next-2" onclick="goNext(2)" disabled>Next <span>→</span></button>
+      </div>
+    </div>
+
+    <!-- ══ STEP 3: Health ══ -->
+    <div class="step" id="step-3">
+      <p class="q-title">How would you rate your physical health right now?</p>
+      <p class="q-sub">Think overall, day-to-day. Use the same scale as the original survey.</p>
+      <div class="health-row" id="health-row"></div>
+      <div class="next-wrap">
+        <button class="next-btn" id="next-3" onclick="goNext(3)" disabled>Next <span>→</span></button>
+      </div>
+    </div>
+
+    <!-- ══ STEP 4: Social media ══ -->
+    <div class="step" id="step-4">
+      <p class="q-title">On an average day, how much time do you spend on social media?</p>
+      <p class="q-sub">Include all platforms — Instagram, TikTok, Snapchat, X, and so on.</p>
+      <div class="sm-col" id="sm-col"></div>
+      <div class="next-wrap">
+        <button class="next-btn" id="next-4" onclick="goNext(4)" disabled>Next <span>→</span></button>
+      </div>
+    </div>
+
+    <!-- ══ STEP 5: Self-esteem ══ -->
+    <div class="step" id="step-5">
+      <p class="q-title">A few questions about how you see yourself</p>
+      <p class="q-sub">No right answers — just respond honestly to each statement.</p>
+      <div class="se-head">
+        <div></div>
+        <div class="se-col-head">Strongly<br>disagree</div>
+        <div class="se-col-head">Disagree</div>
+        <div class="se-col-head">Agree</div>
+        <div class="se-col-head">Strongly<br>agree</div>
+      </div>
+      <div id="se-items"></div>
+      <div class="next-wrap">
+        <button class="next-btn" id="next-5" onclick="showResult()" disabled>See my score <span>→</span></button>
+      </div>
+    </div>
+
+    <!-- ══ RESULT ══ -->
+    <div id="result-panel">
+      <div class="result-title">Your predicted happiness score</div>
+      <p class="result-sub">Based on interaction effects from three moderated regression models in the research.</p>
+
+      <div class="score-row">
+        <span class="score-num" id="scoreNum">–</span>
+        <span class="score-denom">/ 7</span>
+      </div>
+      <span class="score-level" id="scoreLevel"></span>
+
+      <div class="gauge-wrap">
+        <div class="gauge-bg"><div class="gauge-fill" id="gaugeFill"></div></div>
+        <div style="position:relative;">
+          <div class="gauge-marks"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span></div>
+          <div class="gauge-avg-line">
+            <div class="gauge-avg-tick" id="avgTick" style="left:65%"></div>
+            <div class="gauge-avg-label" id="avgLabel" style="left:65%">dataset avg ≈ 5.5</div>
+          </div>
+        </div>
+      </div>
+
+      <p class="result-msg" id="resultMsg"></p>
+      <div class="result-context" id="resultContext"></div>
+      <button class="retry-btn" onclick="resetQuiz()">↩ Try different answers</button>
+
+      <p class="quiz-caption">Prediction uses R²-weighted averages across three separate moderated regression models (sex × social media use; self-esteem × social media use; health × social media use) from the Millennium Cohort Study. The score is illustrative — it reflects group-level patterns in the data, not a clinical measure. Self-esteem scale adapted from Rosenberg (1965): positive items scored 1–4; negative items reverse-scored.</p>
+    </div>
+
+  </div><!-- .inner-rotate -->
+  </div><!-- .paper -->
+</div><!-- .paper-outer -->
+
+<script>
+// ── Model data (from moderator chart regressions) ─────────────────────────
+const MODEL = {
+  sex: {
+    r2: { p1: 0.040, p2: 0.052 },
+    // index 0 = Male, index 1 = Female
+    groups: [
+      { p1: [6.002,5.878,5.754,5.630,5.506], p2: [5.895,5.724,5.553,5.382,5.211] },
+      { p1: [6.052,5.833,5.614,5.395,5.176], p2: [6.130,5.838,5.546,5.254,4.962] }
+    ]
+  },
+  health: {
+    r2: { p1: 0.149, p2: 0.244 },
+    // index 0-4 = Poor / Fair / Good / Very good / Excellent
+    groups: [
+      { p1: [5.285,4.959,4.633,4.307,3.981], p2: [5.073,4.620,4.167,3.714,3.261] },
+      { p1: [5.524,5.275,5.026,4.777,4.528], p2: [5.374,5.018,4.662,4.306,3.950] },
+      { p1: [5.763,5.591,5.419,5.247,5.075], p2: [5.675,5.416,5.157,4.898,4.639] },
+      { p1: [6.002,5.907,5.812,5.717,5.622], p2: [5.976,5.814,5.652,5.490,5.328] },
+      { p1: [6.241,6.223,6.205,6.187,6.169], p2: [6.277,6.212,6.147,6.082,6.017] }
+    ]
+  },
+  se: {
+    r2: { p1: 0.361, p2: 0.472 },
+    // Group midpoints on 1–4 self-esteem index scale
+    midpoints: [1.25, 2.0, 2.75, 3.5],
+    // Least → Most positive self-esteem
+    groups: [
+      { p1: [3.641,3.422,3.203,2.984,2.765], p2: [3.666,3.245,2.824,2.403,1.982] },
+      { p1: [4.667,4.537,4.407,4.277,4.147], p2: [4.687,4.423,4.159,3.895,3.631] },
+      { p1: [5.693,5.652,5.611,5.570,5.529], p2: [5.708,5.601,5.494,5.387,5.280] },
+      { p1: [6.719,6.767,6.815,6.863,6.911], p2: [6.729,6.779,6.829,6.879,6.929] }
+    ]
+  }
+};
+
+// ── Form content ──────────────────────────────────────────────────────────
+const HEALTH_OPTS = [
+  { label:'Poor',       color:'#ebc8bb', size:62,  dark:false },
+  { label:'Fair',       color:'#e69c67', size:72,  dark:false },
+  { label:'Good',       color:'#97c58a', size:82,  dark:false },
+  { label:'Very good',  color:'#2e4b62', size:94,  dark:true  },
+  { label:'Excellent',  color:'#27304a', size:104, dark:true  }
+];
+
+const SM_OPTS = [
+  { label:'None',        desc:'No social media use' },
+  { label:'Under 1 hr',  desc:'Less than an hour a day' },
+  { label:'1–3 hrs',     desc:'One to three hours a day' },
+  { label:'4–6 hrs',     desc:'Four to six hours a day' },
+  { label:'7+ hrs',      desc:'Seven or more hours a day' }
+];
+
+// positive=true: score as-is; positive=false: invert (5 − raw)
+const SE_ITEMS = [
+  { text: 'I have good qualities',             positive: true  },
+  { text: 'I feel useless at times',           positive: false },
+  { text: "I'm a likeable person",             positive: true  },
+  { text: 'I feel like a failure',             positive: false },
+  { text: 'I feel no good at all',             positive: false },
+  { text: "I don't have much to be proud of",  positive: false }
+];
+
+// ── State ─────────────────────────────────────────────────────────────────
+const state = { cohort:null, sex:null, health:null, sm:null, seScores:new Array(6).fill(null) };
+
+// ── Build dynamic UI ──────────────────────────────────────────────────────
+function init() {
+  // Health buttons (grow in size from Poor → Excellent)
+  const hr = document.getElementById('health-row');
+  HEALTH_OPTS.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'health-btn';
+    btn.style.width  = opt.size + 'px';
+    btn.style.height = opt.size + 'px';
+    btn.innerHTML = `<span class="hshape" style="background:${opt.color}"></span>
+                     <span class="hlabel" style="color:${opt.dark?'#fefdf9':'#27304a'};font-size:${opt.size < 75 ? '0.78' : '0.88'}rem">${opt.label}</span>`;
+    btn.onclick = () => {
+      document.querySelectorAll('.health-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      state.health = i;
+      document.getElementById('next-3').disabled = false;
+    };
+    hr.appendChild(btn);
+  });
+
+  // SM buttons
+  const sc = document.getElementById('sm-col');
+  SM_OPTS.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'sm-btn';
+    btn.innerHTML = `<span class="sm-dot"></span>
+                     <span>${opt.label}<span class="sm-desc">— ${opt.desc}</span></span>`;
+    btn.onclick = () => {
+      document.querySelectorAll('.sm-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      state.sm = i;
+      document.getElementById('next-4').disabled = false;
+    };
+    sc.appendChild(btn);
+  });
+
+  // SE items
+  const container = document.getElementById('se-items');
+  SE_ITEMS.forEach((item, qi) => {
+    const row = document.createElement('div');
+    row.className = 'se-item';
+    row.innerHTML = `<span class="se-stmt">${item.text}</span>`;
+    [1,2,3,4].forEach(val => {
+      const btn = document.createElement('button');
+      btn.className = 'se-opt';
+      btn.title = ['Strongly disagree','Disagree','Agree','Strongly agree'][val-1];
+      btn.onclick = () => {
+        container.querySelectorAll(`.se-opt[data-q="${qi}"]`).forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        state.seScores[qi] = val;
+        document.getElementById('next-5').disabled = state.seScores.some(s => s === null);
+      };
+      btn.dataset.q = qi;
+      row.appendChild(btn);
+    });
+    container.appendChild(row);
+  });
+}
+
+// ── Navigation ────────────────────────────────────────────────────────────
+function setChoice(key, val, btn) {
+  btn.closest('.choice-row').querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  state[key] = val;
+  const nextId = key === 'cohort' ? 'next-1' : 'next-2';
+  document.getElementById(nextId).disabled = false;
+}
+
+function goNext(from) {
+  document.getElementById('step-' + from).classList.remove('active');
+  document.getElementById('step-' + (from + 1)).classList.add('active');
+  document.getElementById('stepLabel').textContent = (from + 1) + ' / 5';
+  document.getElementById('progressFill').style.width = ((from + 1) / 5 * 100) + '%';
+}
+
+// ── Prediction ────────────────────────────────────────────────────────────
+function computeSeIndex() {
+  return state.seScores.reduce((sum, raw, i) => {
+    const scored = SE_ITEMS[i].positive ? raw : (5 - raw);
+    return sum + scored;
+  }, 0) / SE_ITEMS.length;
+}
+
+function getPrediction() {
+  const pk   = state.cohort === 2000 ? 'p1' : 'p2';
+  const smIdx = state.sm;
+  const seIdx = computeSeIndex();        // 1–4
+
+  // Sex
+  const sexPred = MODEL.sex.groups[state.sex][pk][smIdx];
+  const sexW    = MODEL.sex.r2[pk];
+
+  // Health
+  const healthPred = MODEL.health.groups[state.health][pk][smIdx];
+  const healthW    = MODEL.health.r2[pk];
+
+  // Self-esteem (linear interpolation between group midpoints)
+  const mps = MODEL.se.midpoints;
+  const seG = MODEL.se.groups;
+  let sePred;
+  if (seIdx <= mps[0]) {
+    sePred = seG[0][pk][smIdx];
+  } else if (seIdx >= mps[3]) {
+    sePred = seG[3][pk][smIdx];
+  } else {
+    for (let i = 0; i < mps.length - 1; i++) {
+      if (seIdx >= mps[i] && seIdx <= mps[i + 1]) {
+        const t = (seIdx - mps[i]) / (mps[i + 1] - mps[i]);
+        sePred = seG[i][pk][smIdx] * (1 - t) + seG[i + 1][pk][smIdx] * t;
+        break;
+      }
+    }
+  }
+  const seW = MODEL.se.r2[pk];
+
+  // R²-weighted average across the three models
+  const totalW = sexW + healthW + seW;
+  return Math.max(1, Math.min(7, (sexW * sexPred + healthW * healthPred + seW * sePred) / totalW));
+}
+
+// ── Result display ────────────────────────────────────────────────────────
+function showResult() {
+  // Hide quiz sections
+  document.querySelectorAll('.step').forEach(s => { s.classList.remove('active'); s.style.display = 'none'; });
+  document.getElementById('quiz-header').style.display   = 'none';
+  document.getElementById('progress-wrap').style.display = 'none';
+
+  const score  = getPrediction();
+  const seIdx  = computeSeIndex();
+  const pk     = state.cohort === 2000 ? 'p1' : 'p2';
+
+  // Interpret score
+  let levelText, levelBg, levelColor, msg;
+  if (score < 3.9) {
+    levelText  = 'Below average'; levelBg = 'rgba(235,200,187,0.45)'; levelColor = '#a05030';
+    msg = 'The combination of factors you described — particularly lower self-esteem, poorer health, or heavier social media use — is associated with notably lower happiness scores in the data. The research found these factors compound one another, especially among the younger cohort born around 2005.';
+  } else if (score < 5.0) {
+    levelText  = 'Slightly below average'; levelBg = 'rgba(230,156,103,0.25)'; levelColor = '#9a5820';
+    msg = 'Your profile maps onto a somewhat lower happiness level. Some risk factors are present, though the picture is mixed. The research showed that self-esteem was the strongest single protective factor — and it can change with time and support.';
+  } else if (score < 5.6) {
+    levelText  = 'Around average'; levelBg = 'rgba(253,244,137,0.45)'; levelColor = '#7a6800';
+    msg = 'Your profile maps onto a happiness level close to the dataset average. You have a mix of protective factors and risk factors. Neither heavy social media use alone nor any single characteristic fully determined outcomes in the data.';
+  } else if (score < 6.2) {
+    levelText  = 'Above average'; levelBg = 'rgba(151,197,138,0.35)'; levelColor = '#2d6b25';
+    msg = 'The factors you described are associated with above-average happiness. Strong self-esteem and good health appear to buffer the negative effects of social media use — exactly the pattern the interaction models uncovered in the research.';
+  } else {
+    levelText  = 'Well above average'; levelBg = 'rgba(46,75,98,0.12)'; levelColor = '#2e4b62';
+    msg = 'Your profile maps onto some of the highest happiness scores in the dataset. Self-esteem was the strongest predictor in the models (R² up to 0.47 for the 2005 cohort) — and those with the most positive self-views were largely shielded from the negative effects of even heavy social media use.';
+  }
+
+  // SE quartile label
+  const seLabel = seIdx < 1.625 ? 'least positive' :
+                  seIdx < 2.375 ? 'less positive'  :
+                  seIdx < 3.125 ? 'more positive'  : 'most positive';
+
+  const sexLabel    = state.sex === 0 ? 'male' : 'female';
+  const healthLabel = HEALTH_OPTS[state.health].label.toLowerCase();
+  const smLabel     = SM_OPTS[state.sm].label.toLowerCase();
+  const cohortLabel = state.cohort === 2000 ? 'born around 2000' : 'born around 2005';
+
+  const contextText = `For ${sexLabel} young people ${cohortLabel} with ${healthLabel} health and ${smLabel} of social media use per day, the data suggests a predicted happiness range of roughly ${getRange(pk, state.sex, state.health, state.sm)} out of 7. Your self-esteem index of ${seIdx.toFixed(2)} / 4 places you in the '${seLabel}' group — the factor the models weighted most heavily (R² = ${MODEL.se.r2[pk]}).`;
+
+  // Populate
+  document.getElementById('scoreNum').textContent = score.toFixed(1);
+  const lvl = document.getElementById('scoreLevel');
+  lvl.textContent = levelText; lvl.style.background = levelBg; lvl.style.color = levelColor;
+  document.getElementById('resultMsg').textContent     = msg;
+  document.getElementById('resultContext').textContent = contextText;
+
+  // Dataset average tick (approx 5.5 → (5.5-1)/6 = 75%)
+  const avgPct = ((5.5 - 1) / 6 * 100).toFixed(1);
+  document.getElementById('avgTick').style.left  = avgPct + '%';
+  document.getElementById('avgLabel').style.left = avgPct + '%';
+
+  document.getElementById('result-panel').style.display = 'block';
+
+  // Animate gauge
+  setTimeout(() => {
+    document.getElementById('gaugeFill').style.width = ((score - 1) / 6 * 100) + '%';
+  }, 120);
+}
+
+function getRange(pk, sexIdx, healthIdx, smIdx) {
+  const vals = [
+    MODEL.sex.groups[sexIdx][pk][smIdx],
+    MODEL.health.groups[healthIdx][pk][smIdx]
+  ];
+  return Math.min(...vals).toFixed(1) + '–' + Math.max(...vals).toFixed(1);
+}
+
+// ── Reset ─────────────────────────────────────────────────────────────────
+function resetQuiz() {
+  Object.assign(state, { cohort:null, sex:null, health:null, sm:null, seScores:new Array(6).fill(null) });
+  document.getElementById('result-panel').style.display     = 'none';
+  document.getElementById('quiz-header').style.display      = '';
+  document.getElementById('progress-wrap').style.display    = '';
+  document.getElementById('gaugeFill').style.width          = '0%';
+  document.getElementById('stepLabel').textContent          = '1 / 5';
+  document.getElementById('progressFill').style.width       = '0%';
+
+  document.querySelectorAll('.step').forEach((s, i) => {
+    s.style.display = ''; s.classList.remove('active');
+    if (i === 0) s.classList.add('active');
+  });
+  document.querySelectorAll('.choice-btn, .health-btn, .sm-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelectorAll('.se-opt').forEach(b => b.classList.remove('selected'));
+  document.querySelectorAll('.next-btn').forEach(b => { b.disabled = true; });
+}
+
+init();
+</script>
+</body>
+</html>
