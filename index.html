@@ -297,11 +297,9 @@
     ═══════════════════════════════════════════════════ */
     .chart-embed-wrap {
       width: 100%;
-      margin: 40px 0;
-      border-radius: 10px;
-      overflow: hidden;
-      /* Matches the yellow section bg so the iframe feels painted in */
-      background: var(--yellow);
+      margin: 48px 0;
+      overflow: visible;
+      background: transparent;
     }
     .chart-embed {
       display: block;
@@ -310,9 +308,8 @@
       border: none;
     }
     .chart-embed--tall {
-      height: 700px;
+      height: 780px;
     }
-    /* On the yellow data section, strip the wrapper bg so iframe bg shows through */
     .s-data .chart-embed-wrap {
       background: transparent;
     }
