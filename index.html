@@ -293,33 +293,28 @@
     }
 
     /* ═══════════════════════════════════════════════════
-       GRAPH / IMAGE BLOCKS — full width
+       CHART EMBEDS — seamless iframes
     ═══════════════════════════════════════════════════ */
-    .graph-block { width: 100%; margin: 40px 0; }
-    .graph-ph {
-      width: 100%; min-height: 400px;
-      background: rgba(0,0,0,0.05);
+    .chart-embed-wrap {
+      width: 100%;
+      margin: 40px 0;
+      border-radius: 10px;
+      overflow: hidden;
+      /* Matches the yellow section bg so the iframe feels painted in */
+      background: var(--yellow);
+    }
+    .chart-embed {
+      display: block;
+      width: 100%;
+      height: 620px;
       border: none;
-      border-radius: 6px;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: 12px; padding: 32px; text-align: center;
     }
-    .graph-ph .ico { font-size: 2.4rem; }
-    .graph-ph span {
-      font-family: var(--font-hand); font-size: 1.05rem;
-      color: rgba(0,0,0,0.32); line-height: 1.5;
+    .chart-embed--tall {
+      height: 700px;
     }
-    .s-info .graph-ph, .s-close .graph-ph {
-      background: rgba(255,255,255,0.05);
-      border-color: rgba(255,255,255,0.18);
-    }
-    .s-info .graph-ph span, .s-close .graph-ph span {
-      color: rgba(255,255,255,0.35);
-    }
-    .graph-block iframe {
-      width: 100%; min-height: 480px;
-      border: none; border-radius: 6px; display: block;
+    /* On the yellow data section, strip the wrapper bg so iframe bg shows through */
+    .s-data .chart-embed-wrap {
+      background: transparent;
     }
 
     /* ═══════════════════════════════════════════════════
@@ -580,12 +575,8 @@
 
   <!-- GRAPH 1 — full width -->
   <div class="wide fi">
-    <div class="graph-block">
-      <div class="graph-ph">
-        <span class="ico">📊</span>
-        <span>[ Graph 1: Social Media and Happiness ]<br>
-        Replace with: &lt;iframe src="chart2.html"&gt;&lt;/iframe&gt;</span>
-      </div>
+    <div class="chart-embed-wrap">
+      <iframe src="chart2.html" class="chart-embed" title="Social media use and happiness over time" loading="lazy"></iframe>
     </div>
   </div>
 
@@ -605,10 +596,8 @@
 
   <!-- GRAPH 2 — full width -->
   <div class="wide fi">
-    <div class="chart-container fade-in">
-  <iframe src="moderator_chart.html" style="width: 100%; height: 100vh; border: none;"></iframe>
-</div>
-      </div>
+    <div class="chart-embed-wrap">
+      <iframe src="moderator_chart.html" class="chart-embed chart-embed--tall" title="Moderating factors on social media and happiness" loading="lazy"></iframe>
     </div>
   </div>
 
@@ -628,12 +617,8 @@
 
   <!-- GRAPH 3 — full width -->
   <div class="wide fi">
-    <div class="graph-block">
-      <div class="graph-ph">
-        <span class="ico">🔍</span>
-        <span>[ Graph 3: Psychosocial factors ]<br>
-        Replace with: &lt;iframe src="chart3.html"&gt;&lt;/iframe&gt;</span>
-      </div>
+    <div class="chart-embed-wrap">
+      <iframe src="chart3.html" class="chart-embed" title="Psychosocial factors and social media use" loading="lazy"></iframe>
     </div>
   </div>
 
@@ -745,6 +730,19 @@
      JAVASCRIPT
 ═══════════════════════════════════════════════════════ -->
 <script>
+  // Auto-size iframes that report their height via postMessage
+  window.addEventListener('message', e => {
+    if (e.data && e.data.iframeHeight) {
+      document.querySelectorAll('.chart-embed').forEach(iframe => {
+        try {
+          if (iframe.contentWindow === e.source) {
+            iframe.style.height = e.data.iframeHeight + 'px';
+          }
+        } catch(_){}
+      });
+    }
+  });
+
   // Progress bar
   const bar = document.getElementById('progress-bar');
   window.addEventListener('scroll', () => {
