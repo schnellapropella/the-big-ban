@@ -52,12 +52,12 @@ body {
 /* ── Tape decorations ── */
 .tape {
   position: absolute; z-index: 10; border-radius: 1px;
-  background-image: repeating-linear-gradient(90deg, rgba(255,255,255,0.12) 0px, rgba(255,255,255,0.12) 1px, transparent 1px, transparent 5px);
+  background-image: repeating-linear-gradient(90deg, rgba(255,255,255,0.13) 0px, rgba(255,255,255,0.13) 1px, transparent 1px, transparent 5px);
   box-shadow: 0 1px 3px rgba(0,0,0,0.12);
 }
-.tape-tl { top:-14px; left:48px; width:82px; height:26px; background:rgba(230,156,103,0.65); transform:rotate(-2deg); }
-.tape-tr { top:-10px; right:72px; width:68px; height:24px; background:rgba(151,197,138,0.68); transform:rotate(2deg); }
-.tape-br { bottom:-12px; right:110px; width:96px; height:25px; background:rgba(235,200,187,0.72); transform:rotate(-1.5deg); }
+.tape-tl { top:-16px; left:44px; width:102px; height:30px; background-color:rgba(214,120,50,0.65); transform:rotate(-2.2deg); }
+.tape-tr { top:-13px; right:68px; width:84px; height:27px; background-color:rgba(151,197,138,0.68); transform:rotate(1.8deg); }
+.tape-br { bottom:-14px; right:100px; width:118px; height:30px; background-color:rgba(253,244,137,0.82); transform:rotate(-1.6deg); }
 
 /* ── Quiz header ── */
 .quiz-header { margin-bottom: 1.2rem; }
@@ -275,7 +275,7 @@ body {
     <!-- ══ STEP 1: Cohort ══ -->
     <div class="step active" id="step-1">
       <p class="q-title">Were you born closer to 2000 or 2005?</p>
-      <p class="q-sub">The research tracked two cohorts of young people. Pick the one you're closest to — or most curious about.</p>
+      <p class="q-sub">Pick whichever cohort you identify with most.</p>
       <div class="choice-row">
         <button class="choice-btn s-orange-btn" onclick="setChoice('cohort',2000,this)">
           <span class="shape s-orange"></span>
@@ -294,7 +294,7 @@ body {
     <!-- ══ STEP 2: Sex ══ -->
     <div class="step" id="step-2">
       <p class="q-title">How do you identify?</p>
-      <p class="q-sub">The original study used binary sex categories. Select whichever best applies to you.</p>
+      <p class="q-sub">The study used binary categories — select whichever applies.</p>
       <div class="choice-row">
         <button class="choice-btn s-blue-btn" onclick="setChoice('sex',0,this)">
           <span class="shape s-blue"></span>
@@ -312,8 +312,8 @@ body {
 
     <!-- ══ STEP 3: Health ══ -->
     <div class="step" id="step-3">
-      <p class="q-title">How would you rate your physical health right now?</p>
-      <p class="q-sub">Think overall, day-to-day. Use the same scale as the original survey.</p>
+      <p class="q-title">How would you rate your health right now?</p>
+      <p class="q-sub">Think overall, day-to-day.</p>
       <div class="health-row" id="health-row"></div>
       <div class="next-wrap">
         <button class="next-btn" id="next-3" onclick="goNext(3)" disabled>Next <span>→</span></button>
@@ -323,7 +323,7 @@ body {
     <!-- ══ STEP 4: Social media ══ -->
     <div class="step" id="step-4">
       <p class="q-title">On an average day, how much time do you spend on social media?</p>
-      <p class="q-sub">Include all platforms — Instagram, TikTok, Snapchat, X, and so on.</p>
+      <p class="q-sub">Across all platforms combined.</p>
       <div class="sm-col" id="sm-col"></div>
       <div class="next-wrap">
         <button class="next-btn" id="next-4" onclick="goNext(4)" disabled>Next <span>→</span></button>
@@ -333,7 +333,7 @@ body {
     <!-- ══ STEP 5: Self-esteem ══ -->
     <div class="step" id="step-5">
       <p class="q-title">A few questions about how you see yourself</p>
-      <p class="q-sub">No right answers — just respond honestly to each statement.</p>
+      <p class="q-sub">Respond as honestly as you can.</p>
       <div class="se-head">
         <div></div>
         <div class="se-col-head">Strongly<br>disagree</div>
@@ -373,7 +373,7 @@ body {
       <div class="result-context" id="resultContext"></div>
       <button class="retry-btn" onclick="resetQuiz()">↩ Try different answers</button>
 
-      <p class="quiz-caption">Prediction uses R²-weighted averages across three separate moderated regression models (sex × social media use; self-esteem × social media use; health × social media use) from the Millennium Cohort Study. The score is illustrative — it reflects group-level patterns in the data, not a clinical measure. Self-esteem scale adapted from Rosenberg (1965): positive items scored 1–4; negative items reverse-scored.</p>
+      <p class="quiz-caption">Prediction uses R²-weighted averages across three separate moderated regression models (sex × social media use; self-esteem × social media use; health × social media use) from the Understanding Society, the UK Longitudinal Household Study. The score is illustrative — it reflects group-level patterns in the data, not a clinical measure. Self-esteem scale adapted from Rosenberg (1965): positive items scored 1–4; negative items reverse-scored.</p>
     </div>
 
   </div><!-- .inner-rotate -->
